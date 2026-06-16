@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - platform_net
+
+  gitea:
+    image: docker.gitea.com/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - USER_UID
+      - USER_GID
+      - GITEA__APP_NAME
+      - GITEA__server__DOMAIN
+      - GITEA__server__ROOT_URL
+      - GITEA__server__SSH_DOMAIN
+      - GITEA__server__SSH_PORT
+      - GITEA__server__DISABLE_SSH
+      - GITEA__server__LFS_START_SERVER
+      - GITEA__service__DISABLE_REGISTRATION
+      - GITEA__database__DB_TYPE
+      - GITEA__database__HOST
+      - GITEA__database__NAME
+      - GITEA__database__USER
+      - GITEA__database__PASSWD
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    networks:
+      - platform_net
+
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    container_name: jenkins
+    restart: unless-stopped
+    user: root
+    environment:
+      - JENKINS_OPTS
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+      # Cho Jenkins dùng Docker daemon của host.
+      # Dùng cho docker build, docker run, docker push trong pipeline.
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - platform_net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - gitea
+      - jenkins
+    networks:
+      - platform_net
+
+volumes:
+  postgres_data:
+  gitea_data:
+  jenkins_home:
+
+networks:
+  platform_net:
+    driver: bridge
