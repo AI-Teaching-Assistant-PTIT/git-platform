@@ -38,6 +38,7 @@ services:
       - GITEA__database__USER
       - GITEA__database__PASSWD
       - GITEA__server__LANDING_PAGE=explore
+      - GITEA__actions__ENABLED=true
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -58,10 +59,25 @@ services:
     networks:
       - platform_net
 
+  runner:
+    image: gitea/act_runner:latest
+    container_name: gitea_runner
+    restart: unless-stopped
+    depends_on:
+      - gitea
+    environment:
+      - GITEA_INSTANCE_URL=http://gitea:3000
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_TOKEN}
+    volumes:
+      - runner_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - platform_net
+
 volumes:
   postgres_data:
   gitea_data:
-  jenkins_home:
+  runner_data:
 
 networks:
   platform_net:
