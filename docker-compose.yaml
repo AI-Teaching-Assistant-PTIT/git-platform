@@ -3,6 +3,8 @@ services:
     image: postgres:15-alpine
     container_name: postgres
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
@@ -13,7 +15,8 @@ services:
       - platform_net
 
   gitea:
-    image: docker.gitea.com/gitea:latest
+    build: ./gitea
+    image: gitptit:latest
     container_name: gitea
     restart: unless-stopped
     depends_on:
@@ -34,6 +37,7 @@ services:
       - GITEA__database__NAME
       - GITEA__database__USER
       - GITEA__database__PASSWD
+      - GITEA__server__LANDING_PAGE=explore
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -44,27 +48,6 @@ services:
     networks:
       - platform_net
 
-  jenkins:
-    build:
-      context: ./jenkins
-      dockerfile: Dockerfile
-    container_name: jenkins
-    restart: unless-stopped
-    user: root
-    environment:
-      - JENKINS_OPTS
-    volumes:
-      - jenkins_home:/var/jenkins_home
-
-      # Cho Jenkins dùng Docker daemon của host.
-      # Dùng cho docker build, docker run, docker push trong pipeline.
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    networks:
-      - platform_net
-
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
@@ -72,7 +55,6 @@ services:
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - gitea
-      - jenkins
     networks:
       - platform_net
 
