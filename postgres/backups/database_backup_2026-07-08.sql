@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cvqnXkT7twUjGjRV91ftMdfDkGbe4cWVzE9R1aYXiZxE4buxQaZzdkZj7UyDWd0
+\restrict PLGCS5QcuMJbjyrururADwt9Cf1gNhru0lLfRM8gH1AqAQ2hzzq61gdu6vJZ0j8
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -5038,11 +5038,6 @@ COPY public.access_token (id, uid, name, token_hash, token_salt, token_last_eigh
 --
 
 COPY public.action (id, user_id, op_type, act_user_id, repo_id, comment_id, is_deleted, ref_name, is_private, content, created_unix) FROM stdin;
-4	1	1	1	2	0	f		t		1783499390
-5	1	2	1	2	0	f		t	Test1	1783504137
-6	1	5	1	2	0	f	refs/heads/main	t		1783504178
-7	1	5	1	2	0	f	refs/heads/main	t	{"Commits":[{"Sha1":"2a3bf2750d6dca13367bc8035287a9409eb58d78","Message":"refactor: remove custom styling and template files\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:44:49+07:00"},{"Sha1":"9a7f5b528c0fc700be758b24fdae7c088a7eed01","Message":"feat: dynamically set lowercase image name in CI workflow to handle case-sensitive repository owners\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:37:13+07:00"},{"Sha1":"0d24bbbf676bd30731c301db9f54bb71e5be8223","Message":"Merge branch 'main' of github.com:NguyenTuKien/git-platform\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:35:32+07:00"},{"Sha1":"94b13bb3d355e87fab2065d16243695c969ba534","Message":"feat: scaffold custom theme with branding, assets, and templates\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:34:45+07:00"},{"Sha1":"bd5bdb64b6f36f0cc475289b712bddf443955d7e","Message":"Update README.md","AuthorEmail":"144638414+NguyenTuKien@users.noreply.github.com","AuthorName":"KienHocCode","CommitterEmail":"noreply@github.com","CommitterName":"GitHub","Timestamp":"2026-06-16T18:07:21+07:00"}],"HeadCommit":{"Sha1":"2a3bf2750d6dca13367bc8035287a9409eb58d78","Message":"refactor: remove custom styling and template files\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:44:49+07:00"},"CompareURL":"","Len":7}	1783504178
-8	1	5	1	2	0	f	refs/heads/main	t	{"Commits":[{"Sha1":"084df3209d6c33af9fbc555300d38112e65c60bc","Message":"feat: integrate Gitea Actions runner and add CI/CD pipeline configuration\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:53:41+07:00"}],"HeadCommit":{"Sha1":"084df3209d6c33af9fbc555300d38112e65c60bc","Message":"feat: integrate Gitea Actions runner and add CI/CD pipeline configuration\\n","AuthorEmail":"KienNT.B23CN465@stu.ptit.edu.vn","AuthorName":"NguyenTuKien","CommitterEmail":"KienNT.B23CN465@stu.ptit.edu.vn","CommitterName":"NguyenTuKien","Timestamp":"2026-07-08T16:53:41+07:00"},"CompareURL":"ngtukien218/Git-platform/compare/2a3bf2750d6dca13367bc8035287a9409eb58d78...084df3209d6c33af9fbc555300d38112e65c60bc","Len":1}	1783504423
 \.
 
 
@@ -5059,8 +5054,6 @@ COPY public.action_artifact (id, run_id, runner_id, repo_id, owner_id, commit_sh
 --
 
 COPY public.action_run (id, title, repo_id, owner_id, workflow_id, index, trigger_user_id, schedule_id, ref, commit_sha, is_fork_pull_request, need_approval, approved_by, event, event_payload, trigger_event, status, version, raw_concurrency, concurrency_group, concurrency_cancel, started, stopped, previous_duration, created, updated) FROM stdin;
-1	refactor: remove custom styling and template files	2	1	ci.yaml	1	1	0	refs/heads/main	2a3bf2750d6dca13367bc8035287a9409eb58d78	f	f	0	push	{"ref":"refs/heads/main","before":"0000000000000000000000000000000000000000","after":"2a3bf2750d6dca13367bc8035287a9409eb58d78","compare_url":"https://git.ngtukien.id.vn/","commits":[{"id":"2a3bf2750d6dca13367bc8035287a9409eb58d78","message":"refactor: remove custom styling and template files\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/2a3bf2750d6dca13367bc8035287a9409eb58d78","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:44:49+07:00","added":[],"removed":["gitea/custom/public/css/custom.css","gitea/custom/public/img/apple-touch-icon.png","gitea/custom/public/img/avatar_default.png","gitea/custom/public/img/avatar_default.svg","gitea/custom/public/img/favicon.png","gitea/custom/public/img/favicon.svg","gitea/custom/public/img/logo.png","gitea/custom/public/img/logo.svg","gitea/custom/templates/base/footer.tmpl","gitea/custom/templates/explore/navbar.tmpl"],"modified":[".github/workflows/ci.yaml"]},{"id":"9a7f5b528c0fc700be758b24fdae7c088a7eed01","message":"feat: dynamically set lowercase image name in CI workflow to handle case-sensitive repository owners\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/9a7f5b528c0fc700be758b24fdae7c088a7eed01","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:37:13+07:00","added":[],"removed":[],"modified":[".github/workflows/ci.yaml"]},{"id":"0d24bbbf676bd30731c301db9f54bb71e5be8223","message":"Merge branch 'main' of github.com:NguyenTuKien/git-platform\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/0d24bbbf676bd30731c301db9f54bb71e5be8223","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:35:32+07:00","added":[],"removed":[],"modified":["README.md"]},{"id":"94b13bb3d355e87fab2065d16243695c969ba534","message":"feat: scaffold custom theme with branding, assets, and templates\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/94b13bb3d355e87fab2065d16243695c969ba534","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:34:45+07:00","added":[".github/workflows/ci.yaml","gitea/Dockerfile","gitea/custom/public/assets/css/custom.css","gitea/custom/public/assets/img/apple-touch-icon.png","gitea/custom/public/assets/img/avatar_default.png","gitea/custom/public/assets/img/avatar_default.svg","gitea/custom/public/assets/img/favicon.png","gitea/custom/public/assets/img/favicon.svg","gitea/custom/public/assets/img/logo.png","gitea/custom/public/assets/img/logo.svg","gitea/custom/public/css/custom.css","gitea/custom/public/img/apple-touch-icon.png","gitea/custom/public/img/avatar_default.png","gitea/custom/public/img/avatar_default.svg","gitea/custom/public/img/favicon.png","gitea/custom/public/img/favicon.svg","gitea/custom/public/img/logo.png","gitea/custom/public/img/logo.svg","gitea/custom/templates/base/footer.tmpl","gitea/custom/templates/base/footer_content.tmpl","gitea/custom/templates/base/head_navbar.tmpl","gitea/custom/templates/explore/navbar.tmpl","gitea/custom/templates/home.tmpl"],"removed":["jenkins/Dockerfile"],"modified":[".env.example","docker-compose.yaml"]},{"id":"bd5bdb64b6f36f0cc475289b712bddf443955d7e","message":"Update README.md","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/bd5bdb64b6f36f0cc475289b712bddf443955d7e","author":{"name":"KienHocCode","email":"144638414+NguyenTuKien@users.noreply.github.com","username":""},"committer":{"name":"GitHub","email":"noreply@github.com","username":""},"verification":null,"timestamp":"2026-06-16T18:07:21+07:00","added":[],"removed":[],"modified":["README.md"]}],"total_commits":0,"head_commit":{"id":"2a3bf2750d6dca13367bc8035287a9409eb58d78","message":"refactor: remove custom styling and template files\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/2a3bf2750d6dca13367bc8035287a9409eb58d78","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:44:49+07:00","added":[],"removed":["gitea/custom/public/css/custom.css","gitea/custom/public/img/apple-touch-icon.png","gitea/custom/public/img/avatar_default.png","gitea/custom/public/img/avatar_default.svg","gitea/custom/public/img/favicon.png","gitea/custom/public/img/favicon.svg","gitea/custom/public/img/logo.png","gitea/custom/public/img/logo.svg","gitea/custom/templates/base/footer.tmpl","gitea/custom/templates/explore/navbar.tmpl"],"modified":[".github/workflows/ci.yaml"]},"repository":{"id":2,"owner":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"ngtukien218.study@gmail.com","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"},"name":"Git-platform","full_name":"ngtukien218/Git-platform","description":"","empty":false,"private":false,"fork":false,"template":false,"mirror":false,"size":22,"language":"","languages_url":"https://git.ngtukien.id.vn/api/v1/repos/ngtukien218/Git-platform/languages","html_url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform","url":"https://git.ngtukien.id.vn/api/v1/repos/ngtukien218/Git-platform","link":"","ssh_url":"ssh://git@git.ngtukien.id.vn:2222/ngtukien218/Git-platform.git","clone_url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform.git","original_url":"","website":"","stars_count":0,"forks_count":0,"watchers_count":1,"branch_count":1,"open_issues_count":0,"open_pr_counter":0,"release_counter":0,"default_branch":"main","archived":false,"created_at":"2026-07-08T15:29:50+07:00","updated_at":"2026-07-08T16:49:38+07:00","archived_at":"1970-01-01T08:00:00+08:00","permissions":{"admin":true,"push":true,"pull":true},"has_code":true,"has_issues":true,"internal_tracker":{"enable_time_tracker":true,"allow_only_contributors_to_track_time":true,"enable_issue_dependencies":true},"has_wiki":true,"has_pull_requests":true,"has_projects":true,"projects_mode":"all","has_releases":true,"has_packages":true,"has_actions":true,"ignore_whitespace_conflicts":false,"allow_merge_commits":true,"allow_rebase":true,"allow_rebase_explicit":true,"allow_squash_merge":true,"allow_fast_forward_only_merge":true,"allow_rebase_update":true,"allow_manual_merge":false,"autodetect_manual_merge":false,"default_delete_branch_after_merge":false,"default_merge_style":"merge","default_allow_maintainer_edit":true,"avatar_url":"","internal":false,"mirror_interval":"","object_format_name":"sha1","mirror_updated":"0001-01-01T00:00:00Z","topics":[],"licenses":[]},"pusher":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"1+ngtukien218@noreply.git.ngtukien.id.vn","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"},"sender":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"1+ngtukien218@noreply.git.ngtukien.id.vn","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"}}	push	2	4			f	1783504911	1783505136	0	1783504178	1783505136
-2	feat: integrate Gitea Actions runner and add CI/CD pipeline configuration	2	1	ci.yaml	2	1	0	refs/heads/main	084df3209d6c33af9fbc555300d38112e65c60bc	f	f	0	push	{"ref":"refs/heads/main","before":"2a3bf2750d6dca13367bc8035287a9409eb58d78","after":"084df3209d6c33af9fbc555300d38112e65c60bc","compare_url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/compare/2a3bf2750d6dca13367bc8035287a9409eb58d78...084df3209d6c33af9fbc555300d38112e65c60bc","commits":[{"id":"084df3209d6c33af9fbc555300d38112e65c60bc","message":"feat: integrate Gitea Actions runner and add CI/CD pipeline configuration\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/084df3209d6c33af9fbc555300d38112e65c60bc","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:53:41+07:00","added":[".gitea/workflows/ci.yaml"],"removed":[],"modified":[".env.example","docker-compose.yaml"]}],"total_commits":0,"head_commit":{"id":"084df3209d6c33af9fbc555300d38112e65c60bc","message":"feat: integrate Gitea Actions runner and add CI/CD pipeline configuration\\n","url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform/commit/084df3209d6c33af9fbc555300d38112e65c60bc","author":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"committer":{"name":"NguyenTuKien","email":"KienNT.B23CN465@stu.ptit.edu.vn","username":""},"verification":null,"timestamp":"2026-07-08T16:53:41+07:00","added":[".gitea/workflows/ci.yaml"],"removed":[],"modified":[".env.example","docker-compose.yaml"]},"repository":{"id":2,"owner":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"ngtukien218.study@gmail.com","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"},"name":"Git-platform","full_name":"ngtukien218/Git-platform","description":"","empty":false,"private":false,"fork":false,"template":false,"mirror":false,"size":290,"language":"","languages_url":"https://git.ngtukien.id.vn/api/v1/repos/ngtukien218/Git-platform/languages","html_url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform","url":"https://git.ngtukien.id.vn/api/v1/repos/ngtukien218/Git-platform","link":"","ssh_url":"ssh://git@git.ngtukien.id.vn:2222/ngtukien218/Git-platform.git","clone_url":"https://git.ngtukien.id.vn/ngtukien218/Git-platform.git","original_url":"","website":"","stars_count":0,"forks_count":0,"watchers_count":1,"branch_count":1,"open_issues_count":0,"open_pr_counter":0,"release_counter":0,"default_branch":"main","archived":false,"created_at":"2026-07-08T15:29:50+07:00","updated_at":"2026-07-08T16:49:38+07:00","archived_at":"1970-01-01T08:00:00+08:00","permissions":{"admin":true,"push":true,"pull":true},"has_code":true,"has_issues":true,"internal_tracker":{"enable_time_tracker":true,"allow_only_contributors_to_track_time":true,"enable_issue_dependencies":true},"has_wiki":true,"has_pull_requests":true,"has_projects":true,"projects_mode":"all","has_releases":true,"has_packages":true,"has_actions":true,"ignore_whitespace_conflicts":false,"allow_merge_commits":true,"allow_rebase":true,"allow_rebase_explicit":true,"allow_squash_merge":true,"allow_fast_forward_only_merge":true,"allow_rebase_update":true,"allow_manual_merge":false,"autodetect_manual_merge":false,"default_delete_branch_after_merge":false,"default_merge_style":"merge","default_allow_maintainer_edit":true,"avatar_url":"","internal":false,"mirror_interval":"","object_format_name":"sha1","mirror_updated":"0001-01-01T00:00:00Z","topics":[],"licenses":[]},"pusher":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"1+ngtukien218@noreply.git.ngtukien.id.vn","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"},"sender":{"id":1,"login":"ngtukien218","login_name":"","source_id":0,"full_name":"","email":"1+ngtukien218@noreply.git.ngtukien.id.vn","avatar_url":"https://git.ngtukien.id.vn/avatars/eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27","html_url":"https://git.ngtukien.id.vn/ngtukien218","language":"","is_admin":false,"last_login":"0001-01-01T00:00:00Z","created":"2026-07-03T17:33:04+07:00","restricted":false,"active":false,"prohibit_login":false,"location":"","website":"","description":"","visibility":"public","followers_count":0,"following_count":0,"starred_repos_count":0,"username":"ngtukien218"}}	push	2	4			f	1783505136	1783505175	0	1783504423	1783505175
 \.
 
 
@@ -5069,7 +5062,7 @@ COPY public.action_run (id, title, repo_id, owner_id, workflow_id, index, trigge
 --
 
 COPY public.action_run_index (group_id, max_index) FROM stdin;
-2	2
+2	5
 \.
 
 
@@ -5078,8 +5071,6 @@ COPY public.action_run_index (group_id, max_index) FROM stdin;
 --
 
 COPY public.action_run_job (id, run_id, repo_id, owner_id, commit_sha, is_fork_pull_request, name, attempt, workflow_payload, job_id, needs, runs_on, task_id, status, raw_concurrency, is_concurrency_evaluated, concurrency_group, concurrency_cancel, token_permissions, started, stopped, created, updated) FROM stdin;
-1	1	2	1	2a3bf2750d6dca13367bc8035287a9409eb58d78	f	build-scan-push	1	\\x6e616d653a2043492f434420506970656c696e650a226f6e223a0a20202020707573683a0a20202020202020206272616e636865733a205b226d61696e225d0a2020202020202020746167733a205b22762a2e2a2e2a222c2022762a225d0a2020202070756c6c5f726571756573743a0a20202020202020206272616e636865733a205b226d61696e225d0a2020202072656c656173653a0a202020202020202074797065733a205b7075626c69736865645d0a656e763a0a2020202052454749535452593a20676863722e696f0a6a6f62733a0a202020206275696c642d7363616e2d707573683a0a20202020202020206e616d653a206275696c642d7363616e2d707573680a202020202020202072756e732d6f6e3a207562756e74752d6c61746573740a202020202020202073746570733a0a2020202020202020202020202d206e616d653a20436865636b6f7574207265706f7369746f72790a2020202020202020202020202020757365733a20616374696f6e732f636865636b6f75744076340a2020202020202020202020202d206e616d653a20536574206c6f7765726361736520696d616765206e616d650a202020202020202020202020202072756e3a207c0a202020202020202020202020202020205245504f3d24286563686f2022247b7b206769746875622e7265706f7369746f7279207d7d22207c20747220275b3a75707065723a5d2720275b3a6c6f7765723a5d27290a202020202020202020202020202020206563686f2022494d4147455f4e414d453d245245504f22203e3e20244749544855425f454e560a2020202020202020202020202d206e616d653a204275696c6420446f636b657220696d6167650a202020202020202020202020202072756e3a207c0a20202020202020202020202020202020646f636b6572206275696c64202d7420247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c202d662067697465612f446f636b657266696c65202e2f67697465610a2020202020202020202020202d206e616d653a2052756e2054726976792076756c6e65726162696c697479207363616e6e65720a2020202020202020202020202020757365733a206171756173656375726974792f74726976792d616374696f6e406d61737465720a2020202020202020202020202020776974683a0a20202020202020202020202020202020657869742d636f64653a202230220a20202020202020202020202020202020666f726d61743a207461626c650a2020202020202020202020202020202069676e6f72652d756e66697865643a202274727565220a20202020202020202020202020202020696d6167652d7265663a20247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c0a2020202020202020202020202020202073657665726974793a20435249544943414c2c484947480a2020202020202020202020202020202076756c6e2d747970653a206f732c6c6962726172790a2020202020202020202020202d2069663a206769746875622e6576656e745f6e616d6520213d202770756c6c5f72657175657374270a20202020202020202020202020206e616d653a204c6f6720696e20746f2074686520436f6e7461696e65722072656769737472790a2020202020202020202020202020757365733a20646f636b65722f6c6f67696e2d616374696f6e4076330a2020202020202020202020202020776974683a0a2020202020202020202020202020202070617373776f72643a20247b7b20736563726574732e4749544855425f544f4b454e207d7d0a2020202020202020202020202020202072656769737472793a20247b7b20656e762e5245474953545259207d7d0a20202020202020202020202020202020757365726e616d653a20247b7b206769746875622e6163746f72207d7d0a2020202020202020202020202d2069663a206769746875622e6576656e745f6e616d6520213d202770756c6c5f72657175657374270a20202020202020202020202020206e616d653a2054616720616e64205075736820446f636b657220696d6167650a202020202020202020202020202072756e3a207c0a20202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a6c61746573740a20202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a247b7b206769746875622e736861207d7d0a0a2020202020202020202020202020202023204ee1babf7520c491c6b0e1bba36320747269676765722062e1bab16e672054616720686fe1bab7632052656c656173652c2074e1baa16f207468c3aa6d20696d616765207461672074c6b0c6a16e6720e1bba96e670a202020202020202020202020202020206966205b5b2022247b7b206769746875622e726566207d7d22203d3d20726566732f746167732f2a205d5d3b207468656e0a20202020202020202020202020202020202056455253494f4e3d247b4749544855425f52454623726566732f746167732f7d0a202020202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a2456455253494f4e0a2020202020202020202020202020202066690a0a20202020202020202020202020202020646f636b6572207075736820247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d202d2d616c6c2d746167730a20202020202020207065726d697373696f6e733a0a202020202020202020202020636f6e74656e74733a20726561640a2020202020202020202020207061636b616765733a2077726974650a20202020202020202020202073656375726974792d6576656e74733a20777269746520232043e1baa76e20746869e1babf74206ee1babf75206d75e1bb916e20c491e1baa979207265706f7274207363616e206cc3aa6e205365637572697479207461622063e1bba761204769744875620a	build-scan-push	null	["ubuntu-latest"]	1	2		f		f	{"unit_access_modes":{"1":1,"10":0,"2":0,"3":0,"4":1,"5":0,"8":0,"9":2}}	1783504911	1783505136	1783504178	1783505136
-2	2	2	1	084df3209d6c33af9fbc555300d38112e65c60bc	f	build-scan-push	1	\\x6e616d653a2043492f434420506970656c696e650a226f6e223a0a20202020707573683a0a20202020202020206272616e636865733a205b226d61696e225d0a2020202020202020746167733a205b22762a2e2a2e2a222c2022762a225d0a2020202070756c6c5f726571756573743a0a20202020202020206272616e636865733a205b226d61696e225d0a2020202072656c656173653a0a202020202020202074797065733a205b7075626c69736865645d0a656e763a0a2020202052454749535452593a206769742e6e6774756b69656e2e69642e766e0a6a6f62733a0a202020206275696c642d7363616e2d707573683a0a20202020202020206e616d653a206275696c642d7363616e2d707573680a202020202020202072756e732d6f6e3a207562756e74752d6c61746573740a202020202020202073746570733a0a2020202020202020202020202d206e616d653a20436865636b6f7574207265706f7369746f72790a2020202020202020202020202020757365733a20616374696f6e732f636865636b6f75744076340a2020202020202020202020202d206e616d653a20536574206c6f7765726361736520696d616765206e616d650a202020202020202020202020202072756e3a207c0a202020202020202020202020202020205245504f3d24286563686f2022247b7b206769746875622e7265706f7369746f7279207d7d22207c20747220275b3a75707065723a5d2720275b3a6c6f7765723a5d27290a202020202020202020202020202020206563686f2022494d4147455f4e414d453d245245504f22203e3e20244749544855425f454e560a2020202020202020202020202d206e616d653a204275696c6420446f636b657220696d6167650a202020202020202020202020202072756e3a207c0a20202020202020202020202020202020646f636b6572206275696c64202d7420247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c202d662067697465612f446f636b657266696c65202e2f67697465610a2020202020202020202020202d206e616d653a2052756e2054726976792076756c6e65726162696c697479207363616e6e65720a2020202020202020202020202020757365733a206171756173656375726974792f74726976792d616374696f6e406d61737465720a2020202020202020202020202020776974683a0a20202020202020202020202020202020657869742d636f64653a202230220a20202020202020202020202020202020666f726d61743a207461626c650a2020202020202020202020202020202069676e6f72652d756e66697865643a202274727565220a20202020202020202020202020202020696d6167652d7265663a20247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c0a2020202020202020202020202020202073657665726974793a20435249544943414c2c484947480a2020202020202020202020202020202076756c6e2d747970653a206f732c6c6962726172790a2020202020202020202020202d2069663a206769746875622e6576656e745f6e616d6520213d202770756c6c5f72657175657374270a20202020202020202020202020206e616d653a204c6f6720696e20746f2074686520436f6e7461696e65722072656769737472790a2020202020202020202020202020757365733a20646f636b65722f6c6f67696e2d616374696f6e4076330a2020202020202020202020202020776974683a0a2020202020202020202020202020202070617373776f72643a20247b7b20736563726574732e47495445415f544f4b454e207c7c20736563726574732e4749544855425f544f4b454e207d7d0a2020202020202020202020202020202072656769737472793a20247b7b20656e762e5245474953545259207d7d0a20202020202020202020202020202020757365726e616d653a20247b7b206769746875622e6163746f72207d7d0a2020202020202020202020202d2069663a206769746875622e6576656e745f6e616d6520213d202770756c6c5f72657175657374270a20202020202020202020202020206e616d653a2054616720616e64205075736820446f636b657220696d6167650a202020202020202020202020202072756e3a207c0a20202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a6c61746573740a20202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a247b7b206769746875622e736861207d7d0a0a2020202020202020202020202020202023204ee1babf7520c491c6b0e1bba36320747269676765722062e1bab16e672054616720686fe1bab7632052656c656173652c2074e1baa16f207468c3aa6d20696d616765207461672074c6b0c6a16e6720e1bba96e670a202020202020202020202020202020206966205b5b2022247b7b206769746875622e726566207d7d22203d3d20726566732f746167732f2a205d5d3b207468656e0a20202020202020202020202020202020202056455253494f4e3d247b4749544855425f52454623726566732f746167732f7d0a202020202020202020202020202020202020646f636b65722074616720247b7b20656e762e494d4147455f4e414d45207d7d3a6c6f63616c20247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d3a2456455253494f4e0a2020202020202020202020202020202066690a0a20202020202020202020202020202020646f636b6572207075736820247b7b20656e762e5245474953545259207d7d2f247b7b20656e762e494d4147455f4e414d45207d7d202d2d616c6c2d746167730a20202020202020207065726d697373696f6e733a0a202020202020202020202020636f6e74656e74733a20726561640a2020202020202020202020207061636b616765733a2077726974650a20202020202020202020202073656375726974792d6576656e74733a20777269746520232043e1baa76e20746869e1babf74206ee1babf75206d75e1bb916e20c491e1baa979207265706f7274207363616e206cc3aa6e205365637572697479207461622063e1bba761204769744875620a	build-scan-push	null	["ubuntu-latest"]	2	2		f		f	{"unit_access_modes":{"1":1,"10":0,"2":0,"3":0,"4":1,"5":0,"8":0,"9":2}}	1783505136	1783505175	1783504423	1783505175
 \.
 
 
@@ -5089,6 +5080,7 @@ COPY public.action_run_job (id, run_id, repo_id, owner_id, commit_sha, is_fork_p
 
 COPY public.action_runner (id, uuid, name, version, owner_id, repo_id, description, base, repo_range, token_hash, token_salt, last_online, last_active, agent_labels, ephemeral, is_disabled, created, updated, deleted) FROM stdin;
 1	928ac4a1-9004-46c7-88cd-cbaa96c75a92	7aef4780b8c8	v0.6.1	0	0		0		52258eab237a1edd729a3a334c041fcb95361d49441b6c779b5fd414084ed8e26dbb9d9e438567f5a8ca17817489e47a3acd	tiwQQ9m2DB	1783510119	1783505175	["ubuntu-latest","ubuntu-24.04","ubuntu-22.04"]	f	f	1783504911	1783510119	\N
+2	fce96928-0d23-413d-834a-a2adea67d6d4	e66dd7166c14	v0.6.1	0	0		0		7bda4defa71a298c2c35dd10f0bb980bf86202b3aa3d67d262b6110b19a741ac5034dc141079aa59fe6bef9ff3cb7a8e0096	2o9ulwL408	1783512303	1783510681	["ubuntu-latest","ubuntu-24.04","ubuntu-22.04"]	f	f	1783510253	1783512303	\N
 \.
 
 
@@ -5097,7 +5089,7 @@ COPY public.action_runner (id, uuid, name, version, owner_id, repo_id, descripti
 --
 
 COPY public.action_runner_token (id, token, owner_id, repo_id, is_active, created, updated, deleted) FROM stdin;
-1	YUZxr3yyDZgTFw5JZ4tDe8rFeRgsTtKMjMQ9OpeZ	0	0	t	1783504356	1783504911	\N
+1	YUZxr3yyDZgTFw5JZ4tDe8rFeRgsTtKMjMQ9OpeZ	0	0	t	1783504356	1783510253	\N
 \.
 
 
@@ -5122,8 +5114,6 @@ COPY public.action_schedule_spec (id, repo_id, schedule_id, next, prev, spec, cr
 --
 
 COPY public.action_task (id, job_id, attempt, runner_id, status, started, stopped, repo_id, owner_id, commit_sha, is_fork_pull_request, token_hash, token_salt, token_last_eight, log_filename, log_in_storage, log_length, log_size, log_indexes, log_expired, created, updated) FROM stdin;
-1	1	1	1	2	1783504911	1783505136	2	1	2a3bf2750d6dca13367bc8035287a9409eb58d78	f	0fed138cfc07f72e72c497325d08043fcb0dc965858bc9175fb96e2dd23344926ffff86dfea9a69718a3f840335cb78a8fde	dr0mpfkgfY	24accaa2	ngtukien218/Git-platform/01/1.log.zst	t	517	39037	\\x00fc01da02d803e804a006b008ec09ce0a880c9a0d960e920f8e108a1186128213ec13d614c015b216a41796188819fa19ec1ade1bd01cc21db41ea61f98208a21fc21ee22e023d224c425b626a8279a2898298a2afc2aee2be02cd22dc42eb62fa8309a318c32fe32f033e234d435c636b837b838b639a63a983b8a3cfa3cec3dde3ece3fc040b041a24292438444fa44ea45da46cc47be48ae49a44a964b884cfa4cec4dde4ed04fc250b451a65298538a54fc54ee55e056d257c458b659a85a9a5b8c5cfe5cf05de25ed45fc660b861aa629c638e648e658c66fe66ee67e068d069c26ab46ba46c966d866ef86ee86fda70cc71be72be73bc74ac759e7690778078f278e279d47aca7bbc7cae7da07e927f848001f68001e88101da8201cc8301be8401b08501a28601948701868801f88801ea8901dc8a01ce8b01c08c01b28d01a48e01968f01889001fa9001ec9101de9201d09301c29401b49501a696019897018a9801fc9801ee9901e09a01d29b01c49c01b69d01a89e019a9f018ca001fea001f0a101e2a201d4a301c6a401b8a501aaa6019ca7018ea80180a901f2a901e4aa01d6ab01c8ac01baad01acae019eaf0190b0018eb101feb101f0b201e0b301d2b401c2b501b4b601a4b70196b80186b901f8b901e8ba01dabb01cabc01bcbd01acbe019ebf018ec001fec001f0c101e0c201d2c301c2c401b4c501a4c60196c70186c801f8c801e8c901daca01cacb01bccc01accd019ece018ecf01fecf01f0d001e0d101d2d201c4d301b4d401a4d50196d6018cd701fed701f0d801e2d901d4da01c6db01b8dc01aadd019cde018edf0180e001f2e001e4e101d6e201c8e301bae401ace5019ee60190e70182e801f4e801e6e901d8ea01caeb01bcec01aeed01a0ee0192ef0184f001f6f001e8f101daf201ccf301bef401b0f501a2f60194f70186f801f8f801eaf901dcfa01cefb01c0fc01b2fd01a4fe0196ff01888002fa8002ec8102de8202d08302d08402ce8502be8602ae87029e88028e8902fe8902ee8a02de8b02ce8c02be8d02ae8e029e8f028e9002fe9002ee9102de9202ce9302be9402ae95029e96028e9702fe9702ee9802de9902ce9a02be9b02ae9c029e9d028e9e02fe9e02ee9f02dea002cea102bea202aea302a4a40294a50284a602faa602dca802beaa02aeae02a6b302a2b802baba02acbf0290c102f2c20298c402b4c502bac602f4c702b4ca02eecc02c6cd029acf02ecd102b2d302fed502acd7028cd802fed902b0db0290dd028cde029adf02ace002d2e102f6e20298e402b4e502d4e602d8e702f8e8028eeb02d2ec0298ef02eaf0028cf202d6f302ecf502bcf80286fb02aafc02fcfd029eff02ea8003ec8203a68403888603e28703888903de8a03da8b03e88c03d68d03fc8e03a09003c29103de9203fe9303829503fe9503fe9703b89a03ec9c03909e0396a003d6a20390a503b4a603b4a803eeaa03a2ad03c6ae03c6af03c6b10380b403b4b603d8b703fcb803bcba0382bd03c2bf039ac00386c10384c20380c303a6c403cac503ecc60388c803a8c903acca03a8cb03d8cd03ecce03eacf039ad10390d203f0d203c4d303ded503bed703b6d903eeda03f2db03aadd0388df03dce003b6e20388e303cee303f2e403b8e50382e703d8e8039ee90390ea03d6ea03b0ec0386ee03e6ef03baf003d4f103ecf203c0f303acf40384f603a6f903b2fb03b0ff038e8104c88304c685049a8604968704b08a04b48c04d88d04e08e04fa9104fe9304a29504aa9604c49904c89b04ce9c04849e04d89e04e69f04cca004a8a20482a404fea4048ca60488a704aea804d2a904f4aa0490ac04b0ad04b4ae04beaf048eb204ecb4049ab704c4b804bab9049aba04dcba04f6bc04d6be04cec004a6c204c8c504d4c704d6c804baca04b8ce0496d004d0d204ded304f4d404d6d604c4d904badc04aae00486e104	f	1783504911	1783505136
-2	2	1	1	2	1783505136	1783505175	2	1	084df3209d6c33af9fbc555300d38112e65c60bc	f	468c65519d9fdf9a82e4719dcb596d21ea8b50aa0a204d0bd836f65d4a688a88693a37f44219107935d517828fa213c8cbb9	LoC1g1gmal	1ea4fed1	ngtukien218/Git-platform/02/2.log.zst	t	198	20695	\\x00fc01da02d803e804a006b008ec09cc0abc0eb413b018c81aba1f9e218023a624c225c8268228c22ae82ba22efa2ece30a033e634b237e038c039b23be43cc43ec03fce40e0418643aa44cc45e84688488c49ac4ac24c864ecc509e52c0538a55a057f059ba5cde5db05fd2609e62a064da65bc679669bc6a926c8e6d9c6e8a6fb070d471f6729274b275b676b277b279ec7ba07ec47fca81018a8401c48601e88701e88901a28c01d68e01fa8f01fa9001fa9201b49501e897018c9901b09a01f09b01b69e01f6a001cea101baa201b8a301b4a401daa501fea601a0a801bca901dcaa01e0ab01dcac018caf01a0b0019eb101ceb201c4b301a4b401f8b40192b701f2b801eaba01a2bc01a6bd01debe01bcc00190c201eac301bcc40182c501a6c601ecc601b6c8018cca01d2ca01c4cb018acc01e4cd01bacf019ad101eed10188d301a0d401f4d401e0d501b8d701dada01e6dc01e4e001c2e201fce401fae601cee701cae801e4eb01e8ed018cef0194f001aef301b2f501d6f601def701f8fa01fcfc0182fe01b8ff018c80029a8102808202dc8302b68502b28602c08702bc8802e28902868b02a88c02c48d02e48e02e88f02f29002c29302a09602ce9802f89902ee9a02ce9b02909c02aa9e028aa00282a202daa302fca60288a9028aaa02eeab02ecaf02cab10284b40292b502a8b6028ab802f8ba02eebd02dec102bac202	f	1783505136	1783505175
 \.
 
 
@@ -5140,18 +5130,6 @@ COPY public.action_task_output (id, task_id, output_key, output_value) FROM stdi
 --
 
 COPY public.action_task_step (id, name, task_id, index, repo_id, status, log_index, log_length, started, stopped, created, updated) FROM stdin;
-1	Checkout repository	1	0	2	2	421	58	1783505106	1783505136	1783504911	1783505136
-2	Set lowercase image name	1	1	2	4	479	0	1783505136	1783505136	1783504911	1783505136
-3	Build Docker image	1	2	2	4	479	0	1783505136	1783505136	1783504911	1783505136
-4	Run Trivy vulnerability scanner	1	3	2	4	479	0	1783505136	1783505136	1783504911	1783505136
-5	Log in to the Container registry	1	4	2	4	479	0	1783505136	1783505136	1783504911	1783505136
-6	Tag and Push Docker image	1	5	2	4	479	0	1783505136	1783505136	1783504911	1783505136
-7	Checkout repository	2	0	2	2	102	58	1783505144	1783505174	1783505136	1783505175
-8	Set lowercase image name	2	1	2	4	160	0	1783505174	1783505174	1783505136	1783505175
-9	Build Docker image	2	2	2	4	160	0	1783505174	1783505174	1783505136	1783505175
-10	Run Trivy vulnerability scanner	2	3	2	4	160	0	1783505174	1783505174	1783505136	1783505175
-11	Log in to the Container registry	2	4	2	4	160	0	1783505174	1783505174	1783505136	1783505175
-12	Tag and Push Docker image	2	5	2	4	160	0	1783505174	1783505174	1783505136	1783505175
 \.
 
 
@@ -5160,9 +5138,9 @@ COPY public.action_task_step (id, name, task_id, index, repo_id, status, log_ind
 --
 
 COPY public.action_tasks_version (id, owner_id, repo_id, version, created_unix, updated_unix) FROM stdin;
-1	0	0	2	1783504178	1783504178
-2	1	0	2	1783504178	1783504178
-3	0	2	2	1783504178	1783504178
+1	0	0	5	1783504178	1783504178
+2	1	0	5	1783504178	1783504178
+3	0	2	5	1783504178	1783504178
 \.
 
 
@@ -5196,7 +5174,7 @@ COPY public.attachment (id, uuid, repo_id, issue_id, release_id, uploader_id, co
 --
 
 COPY public.auth_token (id, token_hash, user_id, expires_unix) FROM stdin;
-LtvJ54O9wk	9bc635d08f8b1d97520918b9d17454f585c30a5f6ce535b00e3b5479855f11cd	1	1785917758
+CHPMiFynBh	8b10b785a145e664f6c6364ce32ba3a18b455749fd1110307e3edcde2f4055b9	1	1786190653
 \.
 
 
@@ -5213,7 +5191,6 @@ COPY public.badge (id, slug, description, image_url) FROM stdin;
 --
 
 COPY public.branch (id, repo_id, name, commit_id, commit_message, pusher_id, is_deleted, deleted_by_id, deleted_unix, commit_time, created_unix, updated_unix) FROM stdin;
-2	2	main	084df3209d6c33af9fbc555300d38112e65c60bc	feat: integrate Gitea Actions runner and add CI/CD pipeline configuration	1	f	0	0	1783504421	1783504177	1783504422
 \.
 
 
@@ -5238,12 +5215,6 @@ COPY public.comment (id, type, poster_id, original_author, original_author_id, i
 --
 
 COPY public.commit_status (id, index, repo_id, state, sha, target_url, description, context_hash, context, creator_id, created_unix, updated_unix) FROM stdin;
-1	1	2	pending	2a3bf2750d6dca13367bc8035287a9409eb58d78	/ngtukien218/Git-platform/actions/runs/1/jobs/1	Waiting to run	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783504178	1783504178
-2	1	2	pending	084df3209d6c33af9fbc555300d38112e65c60bc	/ngtukien218/Git-platform/actions/runs/2/jobs/2	Waiting to run	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783504423	1783504423
-3	2	2	pending	2a3bf2750d6dca13367bc8035287a9409eb58d78	/ngtukien218/Git-platform/actions/runs/1/jobs/1	Has started running	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783504911	1783504911
-4	3	2	failure	2a3bf2750d6dca13367bc8035287a9409eb58d78	/ngtukien218/Git-platform/actions/runs/1/jobs/1	Failing after 3m45s	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783505136	1783505136
-5	2	2	pending	084df3209d6c33af9fbc555300d38112e65c60bc	/ngtukien218/Git-platform/actions/runs/2/jobs/2	Has started running	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783505136	1783505136
-6	3	2	failure	084df3209d6c33af9fbc555300d38112e65c60bc	/ngtukien218/Git-platform/actions/runs/2/jobs/2	Failing after 39s	0c155e37ef478ced2aa9ff0d6e022c50e2fa10a8	CI/CD Pipeline / build-scan-push (push)	-2	1783505175	1783505175
 \.
 
 
@@ -5254,6 +5225,9 @@ COPY public.commit_status (id, index, repo_id, state, sha, target_url, descripti
 COPY public.commit_status_index (id, repo_id, sha, max_index) FROM stdin;
 1	2	2a3bf2750d6dca13367bc8035287a9409eb58d78	3
 2	2	084df3209d6c33af9fbc555300d38112e65c60bc	3
+7	2	9dca54062089e891f9295035fd4d58aba7279491	3
+9	2	9bd333fff15656a0fc7e09ca9c29218b14f277cb	3
+10	2	9093d30aadd45df7aeb531cd0910cc26e187542d	3
 \.
 
 
@@ -5264,6 +5238,9 @@ COPY public.commit_status_index (id, repo_id, sha, max_index) FROM stdin;
 COPY public.commit_status_summary (id, repo_id, sha, state, target_url) FROM stdin;
 1	2	2a3bf2750d6dca13367bc8035287a9409eb58d78	failure	/ngtukien218/Git-platform/actions/runs/1/jobs/1
 2	2	084df3209d6c33af9fbc555300d38112e65c60bc	failure	/ngtukien218/Git-platform/actions/runs/2/jobs/2
+3	2	9dca54062089e891f9295035fd4d58aba7279491	failure	/ngtukien218/Git-platform/actions/runs/3/jobs/3
+4	2	9bd333fff15656a0fc7e09ca9c29218b14f277cb	failure	/ngtukien218/Git-platform/actions/runs/4/jobs/4
+5	2	9093d30aadd45df7aeb531cd0910cc26e187542d	failure	/ngtukien218/Git-platform/actions/runs/5/jobs/5
 \.
 
 
@@ -5296,8 +5273,8 @@ COPY public.deploy_key (id, key_id, repo_id, name, fingerprint, mode, created_un
 --
 
 COPY public.email_address (id, uid, email, lower_email, is_activated, is_primary) FROM stdin;
-1	1	ngtukien218.study@gmail.com	ngtukien218.study@gmail.com	t	t
 2	2	KienNT.B23CN465@stu.ptit.edu.vn	kiennt.b23cn465@stu.ptit.edu.vn	t	t
+1	1	admin.nits@stu.ptit.edu.vn	admin.nits@stu.ptit.edu.vn	t	t
 \.
 
 
@@ -5314,7 +5291,7 @@ COPY public.email_hash (hash, email) FROM stdin;
 --
 
 COPY public.external_login_user (external_id, user_id, login_source_id, raw_data, provider, email, name, first_name, last_name, nick_name, description, avatar_url, location, access_token, access_token_secret, refresh_token, expires_at) FROM stdin;
-7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs	2	1	{"aud":"0f8c6b59-78fa-4426-a185-823e93ad2edf","email":"KienNT.B23CN465@stu.ptit.edu.vn","exp":1783513369,"family_name":"KienNT.B23CN465","given_name":"KienNT.B23CN465","iat":1783509469,"idp":"https://sts.windows.net/e7572e92-7aee-4713-a3c4-ba64888ad45f/","iss":"https://login.microsoftonline.com/5055f54b-8147-447b-a3d1-72b105ed0cdc/v2.0","name":"KienNT.B23CN465","nbf":1783509469,"oid":"26e9dba8-4f9f-4de9-af5b-8bb43baae506","picture":"https://graph.microsoft.com/v1.0/me/photo/$value","preferred_username":"KienNT.B23CN465@stu.ptit.edu.vn","rh":"1.AXAAS_VVUEeBe0Sj0XKxBe0M3FlrjA_6eCZEoYWCPpOtLt8AAOdwAA.","sid":"00510e1a-6edc-4f90-46cf-f78b1ea59754","sub":"7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs","tid":"5055f54b-8147-447b-a3d1-72b105ed0cdc","uti":"gqyA_vhvW0-HrrAFyNFuAA","ver":"2.0"}	Microsoft SSO	KienNT.B23CN465@stu.ptit.edu.vn	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465@stu.ptit.edu.vn		https://graph.microsoft.com/v1.0/me/photo/$value		eyJ0eXAiOiJKV1QiLCJub25jZSI6InpaSFFPNG9YcllmOXIwaEhfVkNBeVo3ckYydmxBV2pCZXM4MTJCbGhySmMiLCJhbGciOiJSUzI1NiIsIng1dCI6ImFGa21LVkZjLTRXVjZzWENCdk5aa1hJNTA1WSIsImtpZCI6ImFGa21LVkZjLTRXVjZzWENCdk5aa1hJNTA1WSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC81MDU1ZjU0Yi04MTQ3LTQ0N2ItYTNkMS03MmIxMDVlZDBjZGMvIiwiaWF0IjoxNzgzNTA5NDY5LCJuYmYiOjE3ODM1MDk0NjksImV4cCI6MTc4MzUxMzgwNiwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsicDEiLCJwZmRyIl0sImFpbyI6IkFhUUFXLzhjQUFBQVVPVWpjT3B6bm1USVI4b0NvUzFNRWdVRDVOekhpM0FBY2JGdDh5ZTBJR0RxS1pZaEVFc050UVM3UUVmd1Vyam9NdWZGaWhVU1JMMmphYmZjOEZSNmd5aWlOV3U1MEo1L0EyeGxadnZZNlNvTzdpcldYQ3Jud3VmNVVuTGNvekJkNEhIMlhDbVFCclA3OEhHWFFnUEx6U3Y0bjdDYUQvZTdzSnc0SHE4ZTVlWks2UWJHYkU4OXpvaUNrSlVZWjUwcjE3RTc1YTR6QUFkSjFKZm1PUi9sUGc9PSIsImFsdHNlY2lkIjoiNTo6MTAwMzIwMDJFRjkyQjBEQSIsImFtciI6WyJwd2QiLCJtZmEiXSwiYXBwX2Rpc3BsYXluYW1lIjoiR2l0UFRJVCBTU08iLCJhcHBpZCI6IjBmOGM2YjU5LTc4ZmEtNDQyNi1hMTg1LTgyM2U5M2FkMmVkZiIsImFwcGlkYWNyIjoiMSIsImVtYWlsIjoiS2llbk5ULkIyM0NONDY1QHN0dS5wdGl0LmVkdS52biIsImZhbWlseV9uYW1lIjoiS2llbk5ULkIyM0NONDY1IiwiZ2l2ZW5fbmFtZSI6IktpZW5OVC5CMjNDTjQ2NSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2U3NTcyZTkyLTdhZWUtNDcxMy1hM2M0LWJhNjQ4ODhhZDQ1Zi8iLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIyNDAyOjgwMDo2MWNkOjIyMzI6NDQyZDoxMjBkOjlhMGQ6YmEyOSIsIm5hbWUiOiJLaWVuTlQuQjIzQ040NjUiLCJvaWQiOiIyNmU5ZGJhOC00ZjlmLTRkZTktYWY1Yi04YmI0M2JhYWU1MDYiLCJwbGF0ZiI6IjgiLCJwdWlkIjoiMTAwMzIwMDVCMjAwM0NFMiIsInJoIjoiMS5BWEFBU19WVlVFZUJlMFNqMFhLeEJlME0zQU1BQUFBQUFBQUF3QUFBQUFBQUFBQUFBT2R3QUEuIiwic2NwIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJzaWQiOiIwMDUxMGUxYS02ZWRjLTRmOTAtNDZjZi1mNzhiMWVhNTk3NTQiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiJWYXFidjZxaE1ZS3ZvdjJ2Wml2OWJESmJFVkswRU5SejNGc3htNGF5WkgwIiwidGVuYW50X3JlZ2lvbl9zY29wZSI6IkFTIiwidGlkIjoiNTA1NWY1NGItODE0Ny00NDdiLWEzZDEtNzJiMTA1ZWQwY2RjIiwidW5pcXVlX25hbWUiOiJLaWVuTlQuQjIzQ040NjVAc3R1LnB0aXQuZWR1LnZuIiwidXRpIjoiZ3F5QV92aHZXMC1IcnJBRnlORnVBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIiwiYjc5ZmJmNGQtM2VmOS00Njg5LTgxNDMtNzZiMTk0ZTg1NTA5Il0sInhtc19hY2QiOjE3ODM1MDYwMTEsInhtc19hY3RfZmN0IjoiOSAzIiwieG1zX2Z0ZCI6IlpkUFNFbV8wVk1EMHl2QUJHOXJtaE12SDNLVW1EVkdrS29mNWxOQmRpLThCYTI5eVpXRmpaVzUwY21Gc0xXUnpiWE0iLCJ4bXNfaWRyZWwiOiIxIDE0IiwieG1zX3BmdGV4cCI6MTc4MzYwMDIwNiwieG1zX3N0Ijp7InN1YiI6IjdLUDVkUjl2OXZDZ2NidXB3d0wyNjFJQ0JkZlVEYURYQXJlNFpnZmZmaHMifSwieG1zX3N1Yl9mY3QiOiIzIDE0IiwieG1zX3RjZHQiOjE3NzM5Nzc1MDksInhtc190bnRfZmN0IjoiMyAxNiJ9.JnbrjL_XAgnfBCgfjG7BxMXYBv3r7VzeFC-lWTZH32kbc76tIsUNf3MSenCVEhv9TwwapKFrBPGCNrN0tWkzFEUVwHoAQ0XmMLqicRtpgPjjG0jM3AgS5F4PbkVlJR6rYdU8FlmKurk9sCNJB8z7EoOQQR0uTw4AgmSZw-MEyBJR8Pz0uqr-HHpqhPXA3A4Jq1KA7aI1mHZX1SSDE2at7Jd43RZRvzTnE7NaTXpNtD_W83RfXbxIwqdw5egqJRSG8qSbtKnd5uS7gMOXiGLydzroHdnGUtBhJ4fd11fVMTC2bOp-fOtZh8oHavGZ4p1k_dLqnP_GzOthODJ4Hju-2g			2026-07-08 19:22:49
+7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs	2	1	{"aud":"0f8c6b59-78fa-4426-a185-823e93ad2edf","email":"KienNT.B23CN465@stu.ptit.edu.vn","exp":1783515872,"family_name":"KienNT.B23CN465","given_name":"KienNT.B23CN465","iat":1783511972,"idp":"https://sts.windows.net/e7572e92-7aee-4713-a3c4-ba64888ad45f/","iss":"https://login.microsoftonline.com/5055f54b-8147-447b-a3d1-72b105ed0cdc/v2.0","name":"KienNT.B23CN465","nbf":1783511972,"oid":"26e9dba8-4f9f-4de9-af5b-8bb43baae506","picture":"https://graph.microsoft.com/v1.0/me/photo/$value","preferred_username":"KienNT.B23CN465@stu.ptit.edu.vn","rh":"1.AXAAS_VVUEeBe0Sj0XKxBe0M3FlrjA_6eCZEoYWCPpOtLt8AAOdwAA.","sid":"00510e1a-6edc-4f90-46cf-f78b1ea59754","sub":"7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs","tid":"5055f54b-8147-447b-a3d1-72b105ed0cdc","uti":"ptbBFuxj9kSoaotNIKZ-AA","ver":"2.0"}	Microsoft SSO	KienNT.B23CN465@stu.ptit.edu.vn	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465@stu.ptit.edu.vn		https://graph.microsoft.com/v1.0/me/photo/$value		eyJ0eXAiOiJKV1QiLCJub25jZSI6InBHNTJ0ZGo4eC1VWFhJQ01QeWJMVlQxMzBRdGlwcVF1LTgtNjFVamxtSm8iLCJhbGciOiJSUzI1NiIsIng1dCI6ImFGa21LVkZjLTRXVjZzWENCdk5aa1hJNTA1WSIsImtpZCI6ImFGa21LVkZjLTRXVjZzWENCdk5aa1hJNTA1WSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC81MDU1ZjU0Yi04MTQ3LTQ0N2ItYTNkMS03MmIxMDVlZDBjZGMvIiwiaWF0IjoxNzgzNTExOTcyLCJuYmYiOjE3ODM1MTE5NzIsImV4cCI6MTc4MzUxNTk2NCwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsicDEiLCJwZmRyIl0sImFpbyI6IkFhUUFXLzhjQUFBQVkzU1VPZVhRckxpWGk4NWxxOUNyTDJkL1QyUnl5TGlzaGozZHcwSU15Qk9EdHBmenRPVDhKT3pscWkydmdzakFzb2UzVWJjZlpJMy9KVFBNM2FhOWZmZ0ZTYkVxa0E3UmhGQVV6cG5uNk1WWXZ4SGRYdXNtaDZRR0JOSHVoaEtld2F0NHlaM1ZhNnVXTEJhUnBaZUFHOUNRbjZwR3MxcGg0RE00TjVjTHoraCs3eUttaWxrUG5vOHIrZUlsdWI5VE1uaHhoQ1lmUjVyMDlnNlprdEpGelE9PSIsImFsdHNlY2lkIjoiNTo6MTAwMzIwMDJFRjkyQjBEQSIsImFtciI6WyJwd2QiLCJtZmEiXSwiYXBwX2Rpc3BsYXluYW1lIjoiR2l0UFRJVCBTU08iLCJhcHBpZCI6IjBmOGM2YjU5LTc4ZmEtNDQyNi1hMTg1LTgyM2U5M2FkMmVkZiIsImFwcGlkYWNyIjoiMSIsImVtYWlsIjoiS2llbk5ULkIyM0NONDY1QHN0dS5wdGl0LmVkdS52biIsImZhbWlseV9uYW1lIjoiS2llbk5ULkIyM0NONDY1IiwiZ2l2ZW5fbmFtZSI6IktpZW5OVC5CMjNDTjQ2NSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2U3NTcyZTkyLTdhZWUtNDcxMy1hM2M0LWJhNjQ4ODhhZDQ1Zi8iLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIyNDAyOjgwMDo2MWNkOjIyMzI6NDQyZDoxMjBkOjlhMGQ6YmEyOSIsIm5hbWUiOiJLaWVuTlQuQjIzQ040NjUiLCJvaWQiOiIyNmU5ZGJhOC00ZjlmLTRkZTktYWY1Yi04YmI0M2JhYWU1MDYiLCJwbGF0ZiI6IjgiLCJwdWlkIjoiMTAwMzIwMDVCMjAwM0NFMiIsInJoIjoiMS5BWEFBU19WVlVFZUJlMFNqMFhLeEJlME0zQU1BQUFBQUFBQUF3QUFBQUFBQUFBQUFBT2R3QUEuIiwic2NwIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJzaWQiOiIwMDUxMGUxYS02ZWRjLTRmOTAtNDZjZi1mNzhiMWVhNTk3NTQiLCJzaWduaW5fc3RhdGUiOlsia21zaSJdLCJzdWIiOiJWYXFidjZxaE1ZS3ZvdjJ2Wml2OWJESmJFVkswRU5SejNGc3htNGF5WkgwIiwidGVuYW50X3JlZ2lvbl9zY29wZSI6IkFTIiwidGlkIjoiNTA1NWY1NGItODE0Ny00NDdiLWEzZDEtNzJiMTA1ZWQwY2RjIiwidW5pcXVlX25hbWUiOiJLaWVuTlQuQjIzQ040NjVAc3R1LnB0aXQuZWR1LnZuIiwidXRpIjoicHRiQkZ1eGo5a1NvYW90TklLWi1BQSIsInZlciI6IjEuMCIsIndpZHMiOlsiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIiwiYjc5ZmJmNGQtM2VmOS00Njg5LTgxNDMtNzZiMTk0ZTg1NTA5Il0sInhtc19hY2QiOjE3ODM1MDYwMTEsInhtc19hY3RfZmN0IjoiMyA5IiwieG1zX2Z0ZCI6IllrOUEzWDdpQUpocFJuLTFfRl9XQTZzam04TTFjVXd0aFNLNWNFMG9tUzBCYTI5eVpXRnpiM1YwYUMxa2MyMXoiLCJ4bXNfaWRyZWwiOiIxIDQiLCJ4bXNfcGZ0ZXhwIjoxNzgzNjAyMzY0LCJ4bXNfc3QiOnsic3ViIjoiN0tQNWRSOXY5dkNnY2J1cHd3TDI2MUlDQmRmVURhRFhBcmU0WmdmZmZocyJ9LCJ4bXNfc3ViX2ZjdCI6IjIgMyIsInhtc190Y2R0IjoxNzczOTc3NTA5LCJ4bXNfdG50X2ZjdCI6IjQgMyJ9.EuDFSUjIAB1bah3y8mWU6yV8qhai_oUrXWj0oGwFEm29yb1CS_HyhEvgZpWOes71q7oPWV0mu1h56UjLmB8BXvqNjL95Bw8J4AUlm070v4vRJyeaddJk087X0KSW50lBJwxeuXlONcaoU_5OEnBnC6VBLjYX16aziAe6PHeXfwL8nT0hsxlYwGw7IakrICWgLNB739MZ5_s3xFh_Dq2BFQZsj6xyE-xpJoXC7-QyyBvICED1-V9dNhMpBnASsHfljK8PdNDsHsmLg8lgRs6wAfa9efvMKbk4M4tfCUevsltrGHs7Qwxpc8LPU9TcbQN0pKhLjJKWoAX_UMVqgofhlg			2026-07-08 20:04:32
 \.
 
 
@@ -5435,9 +5412,6 @@ COPY public.label (id, repo_id, org_id, name, exclusive, exclusive_order, descri
 --
 
 COPY public.language_stat (id, repo_id, commit_id, is_primary, language, size, created_unix) FROM stdin;
-3	2	084df3209d6c33af9fbc555300d38112e65c60bc	f	Dockerfile	456	1783504180
-1	2	084df3209d6c33af9fbc555300d38112e65c60bc	f	CSS	5319	1783504180
-2	2	084df3209d6c33af9fbc555300d38112e65c60bc	t	Go Template	11542	1783504180
 \.
 
 
@@ -5698,7 +5672,6 @@ COPY public.repo_archiver (id, repo_id, type, status, commit_id, created_unix) F
 --
 
 COPY public.repo_indexer_status (id, repo_id, commit_sha, indexer_type) FROM stdin;
-2	2	084df3209d6c33af9fbc555300d38112e65c60bc	1
 \.
 
 
@@ -5715,7 +5688,6 @@ COPY public.repo_license (id, repo_id, commit_id, license, created_unix, updated
 --
 
 COPY public.repo_redirect (id, owner_id, lower_name, redirect_repo_id) FROM stdin;
-1	1	test1	2
 \.
 
 
@@ -5740,14 +5712,6 @@ COPY public.repo_transfer (id, doer_id, recipient_id, repo_id, team_i_ds, create
 --
 
 COPY public.repo_unit (id, repo_id, type, config, created_unix, anonymous_access_mode, everyone_access_mode) FROM stdin;
-9	2	1	\N	1783499390	0	0
-10	2	2	{"EnableTimetracker":true,"AllowOnlyContributorsToTrackTime":true,"EnableDependencies":true}	1783499390	0	0
-11	2	3	{"IgnoreWhitespaceConflicts":false,"AllowMerge":true,"AllowRebase":true,"AllowRebaseMerge":true,"AllowSquash":true,"AllowFastForwardOnly":true,"AllowManualMerge":false,"AutodetectManualMerge":false,"AllowRebaseUpdate":true,"DefaultDeleteBranchAfterMerge":false,"DefaultMergeStyle":"merge","DefaultAllowMaintainerEdit":true,"DefaultTargetBranch":""}	1783499390	0	0
-12	2	4	\N	1783499390	0	0
-13	2	5	\N	1783499390	0	0
-14	2	8	{"ProjectsMode":"all"}	1783499390	0	0
-15	2	9	\N	1783499390	0	0
-16	2	10	\N	1783499390	0	0
 \.
 
 
@@ -5756,7 +5720,6 @@ COPY public.repo_unit (id, repo_id, type, config, created_unix, anonymous_access
 --
 
 COPY public.repository (id, owner_id, owner_name, lower_name, name, description, website, original_service_type, original_url, default_branch, default_wiki_branch, num_watches, num_stars, num_forks, num_issues, num_closed_issues, num_pulls, num_closed_pulls, num_milestones, num_closed_milestones, num_projects, num_closed_projects, num_action_runs, num_closed_action_runs, is_private, is_empty, is_archived, is_mirror, status, is_fork, fork_id, is_template, template_id, size, git_size, lfs_size, is_fsck_enabled, close_issues_via_commit_in_any_branch, topics, object_format_name, trust_model, avatar, created_unix, updated_unix, archived_unix) FROM stdin;
-2	1	ngtukien218	git-platform	Git-platform			0		main	main	0	0	0	0	0	0	0	0	0	0	0	2	2	t	f	f	f	0	f	0	f	0	300220	300220	0	t	f	null	sha1	0		1783499390	1783504423	0
 \.
 
 
@@ -5902,8 +5865,8 @@ COPY public.upload (id, uuid, name) FROM stdin;
 --
 
 COPY public."user" (id, lower_name, name, full_name, email, keep_email_private, email_notifications_preference, passwd, passwd_hash_algo, must_change_password, login_type, login_source, login_name, type, location, website, rands, salt, language, description, created_unix, updated_unix, last_login_unix, last_repo_visibility, max_repo_creation, is_active, is_admin, is_restricted, allow_git_hook, allow_import_local, allow_create_organization, prohibit_login, avatar, avatar_email, use_custom_avatar, num_followers, num_following, num_stars, num_repos, num_teams, num_members, visibility, repo_admin_change_team_access, diff_view_style, theme, keep_activity_private) FROM stdin;
-1	ngtukien218	ngtukien218		ngtukien218.study@gmail.com	f	enabled	41483865fc8d52b751b5832c66a2e3447a698bcd4b15e5b11300b7b9ac203050fb47bc3c3ab331cd920bbe7f21faca95b6f8	pbkdf2$50000$50	f	0	0		0			cbe4ebb740079ba770b0142b9c94729f	0ea9b33943bf66b8b66f952642e09c2b	en-US		1783074784	1783507073	1783507073	f	-1	t	t	f	f	f	t	f	eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27	ngtukien218.study@gmail.com	t	0	0	0	1	0	0	0	f		gitea-light-protanopia-deuteranopia	f
-2	kiennt.b23cn465	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465@stu.ptit.edu.vn	f	enabled			f	6	1	7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs	0			aac6cca2b8e1a46879050fd1b98ed60c		en-US		1783507120	1783509770	1783509770	f	-1	t	f	f	f	f	t	f	a18b1b85dd4c45c3fcdf8c72758c77f3	KienNT.B23CN465@stu.ptit.edu.vn	f	0	0	0	0	0	0	0	f		gitea-auto	f
+1	admin	admin		admin.nits@stu.ptit.edu.vn	f	enabled	58ee71328047328b700b2f62606ee14f9c2968da1daa3232d5dcf10eda9758e1d5f44671ec0180c688861acc805ffa416042	pbkdf2$50000$50	f	0	0		0			cbe4ebb740079ba770b0142b9c94729f	03575f42b4a2a9c6300ffc9ca7a4e035	en-US		1783074784	1783512253	1783512253	f	-1	t	t	f	f	f	t	f	eb24ccb36bbf988c968ac86d431ca2af7f3f199faf043b3bcf843a238bacee27	ngtukien218.study@gmail.com	t	0	0	0	0	0	0	0	f		gitea-light-protanopia-deuteranopia	f
+2	kiennt.b23cn465	KienNT.B23CN465	KienNT.B23CN465	KienNT.B23CN465@stu.ptit.edu.vn	f	enabled			f	6	1	7KP5dR9v9vCgcbupwwL261ICBdfUDaDXAre4Zgfffhs	0			aac6cca2b8e1a46879050fd1b98ed60c		en-US		1783507120	1783512273	1783512273	f	-1	t	t	f	f	f	t	f	a18b1b85dd4c45c3fcdf8c72758c77f3	KienNT.B23CN465@stu.ptit.edu.vn	f	0	0	0	0	0	0	0	f		gitea-auto	f
 \.
 
 
@@ -5936,6 +5899,7 @@ COPY public.user_open_id (id, uid, uri, show) FROM stdin;
 --
 
 COPY public.user_redirect (id, lower_name, redirect_user_id) FROM stdin;
+1	ngtukien218	1
 \.
 
 
@@ -6005,28 +5969,28 @@ SELECT pg_catalog.setval('public.action_artifact_id_seq', 1, false);
 -- Name: action_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_id_seq', 8, true);
+SELECT pg_catalog.setval('public.action_id_seq', 11, true);
 
 
 --
 -- Name: action_run_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_run_id_seq', 2, true);
+SELECT pg_catalog.setval('public.action_run_id_seq', 5, true);
 
 
 --
 -- Name: action_run_job_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_run_job_id_seq', 2, true);
+SELECT pg_catalog.setval('public.action_run_job_id_seq', 5, true);
 
 
 --
 -- Name: action_runner_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_runner_id_seq', 1, true);
+SELECT pg_catalog.setval('public.action_runner_id_seq', 2, true);
 
 
 --
@@ -6054,7 +6018,7 @@ SELECT pg_catalog.setval('public.action_schedule_spec_id_seq', 1, false);
 -- Name: action_task_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_task_id_seq', 2, true);
+SELECT pg_catalog.setval('public.action_task_id_seq', 5, true);
 
 
 --
@@ -6068,7 +6032,7 @@ SELECT pg_catalog.setval('public.action_task_output_id_seq', 1, false);
 -- Name: action_task_step_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.action_task_step_id_seq', 12, true);
+SELECT pg_catalog.setval('public.action_task_step_id_seq', 30, true);
 
 
 --
@@ -6124,35 +6088,35 @@ SELECT pg_catalog.setval('public.comment_id_seq', 1, false);
 -- Name: commit_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.commit_status_id_seq', 6, true);
+SELECT pg_catalog.setval('public.commit_status_id_seq', 15, true);
 
 
 --
 -- Name: commit_status_index_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.commit_status_index_id_seq', 6, true);
+SELECT pg_catalog.setval('public.commit_status_index_id_seq', 15, true);
 
 
 --
 -- Name: commit_status_summary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.commit_status_summary_id_seq', 2, true);
+SELECT pg_catalog.setval('public.commit_status_summary_id_seq', 5, true);
 
 
 --
 -- Name: dbfs_data_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.dbfs_data_id_seq', 3, true);
+SELECT pg_catalog.setval('public.dbfs_data_id_seq', 6, true);
 
 
 --
 -- Name: dbfs_meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.dbfs_meta_id_seq', 2, true);
+SELECT pg_catalog.setval('public.dbfs_meta_id_seq', 5, true);
 
 
 --
@@ -6656,7 +6620,7 @@ SELECT pg_catalog.setval('public.user_open_id_id_seq', 1, false);
 -- Name: user_redirect_id_seq; Type: SEQUENCE SET; Schema: public; Owner: gitea
 --
 
-SELECT pg_catalog.setval('public.user_redirect_id_seq', 1, false);
+SELECT pg_catalog.setval('public.user_redirect_id_seq', 1, true);
 
 
 --
@@ -10184,5 +10148,5 @@ CREATE UNIQUE INDEX "UQE_webauthn_credential_s" ON public.webauthn_credential US
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cvqnXkT7twUjGjRV91ftMdfDkGbe4cWVzE9R1aYXiZxE4buxQaZzdkZj7UyDWd0
+\unrestrict PLGCS5QcuMJbjyrururADwt9Cf1gNhru0lLfRM8gH1AqAQ2hzzq61gdu6vJZ0j8
 
