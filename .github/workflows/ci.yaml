@@ -26,8 +26,8 @@ jobs:
 
       - name: Set lowercase image name
         run: |
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=$OWNER/gitptit" >> $GITHUB_ENV
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=$REPO" >> $GITHUB_ENV
 
       - name: Build Docker image
         # Build image cục bộ để Trivy quét trước khi push
