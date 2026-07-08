@@ -15,8 +15,7 @@ services:
       - platform_net
 
   gitea:
-    build: ./gitea
-    image: gitptit:latest
+    image: ghcr.io/nguyentukien/platform-service:latest
     container_name: gitea
     restart: unless-stopped
     depends_on:
