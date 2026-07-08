@@ -3,8 +3,6 @@ services:
     image: postgres:15-alpine
     container_name: postgres
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
@@ -31,6 +29,7 @@ services:
       - GITEA__server__DISABLE_SSH
       - GITEA__server__LFS_START_SERVER
       - GITEA__service__DISABLE_REGISTRATION
+      - GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION
       - GITEA__database__DB_TYPE
       - GITEA__database__HOST
       - GITEA__database__NAME
