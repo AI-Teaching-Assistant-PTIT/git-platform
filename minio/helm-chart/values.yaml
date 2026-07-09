@@ -19,7 +19,7 @@ persistence:
 mcImage:
   repository: minio/mc
   pullPolicy: IfNotPresent
-  tag: "RELEASE.2024-06-22T05-18-09Z"
+  tag: "latest"
 
 serviceAccount:
   create: true
