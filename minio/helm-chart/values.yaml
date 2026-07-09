@@ -11,6 +11,11 @@ image:
   pullPolicy: IfNotPresent
   tag: "RELEASE.2024-06-22T05-26-45Z"
 
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: local-path
+
 mcImage:
   repository: minio/mc
   pullPolicy: IfNotPresent
