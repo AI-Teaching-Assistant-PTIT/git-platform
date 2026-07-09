@@ -1,0 +1,19 @@
+{{- if .Values.cnpg.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "helm-chart.fullname" . }}
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+spec:
+  instances: {{ .Values.cnpg.instances | default 1 }}
+  storage:
+    size: {{ .Values.cnpg.storageSize | default "10Gi" }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.config.DB_NAME }}
+      owner: {{ .Values.config.DB_USER }}
+      secret:
+        name: {{ include "helm-chart.fullname" . }}
+
+{{- end }}

@@ -1,1 +1,3 @@
 .env
+k3s.yaml
+repo-secret.yaml
