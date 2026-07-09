@@ -11,6 +11,15 @@ image:
   pullPolicy: IfNotPresent
   tag: "RELEASE.2024-06-22T05-26-45Z"
 
+mcImage:
+  repository: minio/mc
+  pullPolicy: IfNotPresent
+  tag: "RELEASE.2024-06-22T05-18-09Z"
+
+buckets:
+  - gitea-backup
+  - postgres-backup
+
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.
