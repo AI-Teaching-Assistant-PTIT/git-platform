@@ -15,5 +15,18 @@ spec:
       owner: {{ .Values.config.owner }}
       secret:
         name: {{ include "helm-chart.fullname" . }}
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://postgres-backup/
+      endpointURL: http://minio-helm-chart.default.svc.cluster.local:9000
+      s3Credentials:
+        accessKeyId:
+          name: minio-secret
+          key: MINIO_ROOT_USER
+        secretAccessKey:
+          name: minio-secret
+          key: MINIO_ROOT_PASSWORD
+      wal:
+        compression: gzip
 
 {{- end }}

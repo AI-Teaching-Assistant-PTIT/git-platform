@@ -71,7 +71,7 @@ service:
   port: 9000
   consolePort: 9001
   nodePortApi: 30090
-  nodePortConsole: 30091
+  nodePortConsole:  
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
