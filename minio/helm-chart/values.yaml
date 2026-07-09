@@ -32,8 +32,8 @@ buckets:
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 # This is to override the chart name.
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "minio"
+fullnameOverride: "minio"
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -67,11 +67,9 @@ securityContext: {}
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
-  type: NodePort
+  type: ClusterIP
   port: 9000
   consolePort: 9001
-  nodePortApi: 30090
-  nodePortConsole: 30091
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
@@ -166,7 +164,7 @@ autoscaling:
 volumes:
   - name: data
     persistentVolumeClaim:
-      claimName: minio-helm-chart-data
+      claimName: minio
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
