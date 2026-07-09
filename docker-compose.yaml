@@ -1,18 +1,43 @@
-version: '3.8'
-
 services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - gitea
+    networks:
+      - platform_net
   gitea:
     image: ghcr.io/nguyentukien/platform-service:latest
     container_name: gitea
+    restart: unless-stopped
+    depends_on:
+      - postgres
     environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      - GITEA__database__DB_TYPE=postgres
-      - GITEA__database__HOST=postgres:5432
-      - GITEA__database__NAME=gitea
-      - GITEA__database__USER=gitea
-      - GITEA__database__PASSWD=gitea_db_password
-    restart: always
+      - USER_UID
+      - USER_GID
+      - GITEA__APP_NAME
+      - GITEA__server__DOMAIN
+      - GITEA__server__ROOT_URL
+      - GITEA__server__SSH_DOMAIN
+      - GITEA__server__SSH_PORT
+      - GITEA__server__DISABLE_SSH
+      - GITEA__server__LFS_START_SERVER
+      - GITEA__service__DISABLE_REGISTRATION
+      - GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION
+      - GITEA__database__DB_TYPE
+      - GITEA__database__HOST
+      - GITEA__database__NAME
+      - GITEA__database__USER
+      - GITEA__database__PASSWD
+      - GITEA__server__LANDING_PAGE=explore
+      - GITEA__actions__ENABLED=true
+      - GITEA__oauth2_client__ACCOUNT_LINKING=auto
+      - GITEA__oauth2_client__UPDATE_AVATAR=true
+      - GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION=true
+      - GITEA__oauth2_client__USERNAME=preferred_username
+      - GITEA__service__VALID_USERNAME_CHARS=a-zA-Z0-9_-.
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -20,8 +45,8 @@ services:
     ports:
       - "3000:3000"
       - "2222:22"
-    depends_on:
-      - postgres
+    networks:
+      - platform_net
 
   postgres:
     image: postgres:15
@@ -40,33 +65,23 @@ services:
     image: minio/minio:RELEASE.2024-06-22T05-26-45Z
     container_name: minio
     command: server /data --console-address ":9001"
+    restart: unless-stopped
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=MinioAdmin@2026
-    restart: always
     volumes:
       - minio_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
-
-  minio-setup:
-    image: minio/mc:latest
-    container_name: minio-setup
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      sleep 5;
-      mc alias set myminio http://minio:9000 admin MinioAdmin@2026;
-      mc mb myminio/gitea-backup || true;
-      mc anonymous set none myminio/gitea-backup;
-      mc mb myminio/postgres-backup || true;
-      mc anonymous set none myminio/postgres-backup;
-      exit 0;
-      "
+    networks:
+      - platform_net
 
 volumes:
   gitea_data:
   postgres_data:
   minio_data:
+
+networks:
+  platform_net:
+    driver: bridge
