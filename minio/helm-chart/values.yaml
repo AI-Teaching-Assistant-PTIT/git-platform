@@ -21,6 +21,10 @@ mcImage:
   pullPolicy: IfNotPresent
   tag: "RELEASE.2024-06-22T05-18-09Z"
 
+serviceAccount:
+  create: true
+  automount: true
+
 buckets:
   - gitea-backup
   - postgres-backup
