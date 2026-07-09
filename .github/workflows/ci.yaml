@@ -44,8 +44,8 @@ jobs:
             # Nếu là Release / Tag thì lấy đúng tên tag đó
             echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           else
-            # Nếu push lên nhánh main thì lấy thời gian commit (Format: YYYYMMDDHHMMSS)
-            COMMIT_TIME=$(git log -1 --format=%cd --date=format:"%Y%m%d%H%M%S")
+            # Nếu push lên nhánh main thì lấy thời gian commit (Format: YYYY-MM-DD_HH-MM-SS)
+            COMMIT_TIME=$(git log -1 --format=%cd --date=format:"%Y-%m-%d_%H-%M-%S")
             echo "IMAGE_TAG=${COMMIT_TIME}" >> $GITHUB_ENV
           fi
 
