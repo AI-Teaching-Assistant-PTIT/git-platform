@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-setup
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "helm-chart.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: "{{ .Values.mcImage.repository }}:{{ .Values.mcImage.tag }}"
+          imagePullPolicy: {{ .Values.mcImage.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: minio-secret
+          command:
+            - /bin/sh
+            - -c
+            - |
+              sleep 15
+              mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+              {{- range .Values.buckets }}
+              mc mb myminio/{{ . }} || true
+              mc anonymous set none myminio/{{ . }}
+              {{- end }}
