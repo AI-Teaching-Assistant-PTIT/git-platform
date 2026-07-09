@@ -17,7 +17,7 @@ config:
   GITEA_INSTANCE_URL: "http://gitea:3000"
 
 secret:
-  GITEA_RUNNER_REGISTRATION_TOKEN: "${GITEA_RUNNER_TOKEN}"
+  GITEA_RUNNER_REGISTRATION_TOKEN: "YUZxr3yyDZgTFw5JZ4tDe8rFeRgsTtKMjMQ9OpeZ"
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:

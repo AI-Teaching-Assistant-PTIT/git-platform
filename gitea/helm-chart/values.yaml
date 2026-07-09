@@ -192,7 +192,7 @@ config:
   GITEA__server__LFS_START_SERVER: "true"
   GITEA__database__DB_TYPE: "postgres"
   GITEA__database__HOST: "postgres-rw:5432"
-  GITEA__database__NAME: "${DB_NAME}"
+  GITEA__database__NAME: "gitea"
   USER_UID: "1000"
   USER_GID: "1000"
   GITEA__server__DOMAIN: "git.ngtukien.id.vn"
@@ -206,5 +206,5 @@ config:
   GITEA__actions__ENABLED: "true"
 
 secret:
-  GITEA__database__USER: "${DB_USER}"
-  GITEA__database__PASSWD: "${DB_PASS}"
+  GITEA__database__USER: "gitea"
+  GITEA__database__PASSWD: "gitea_secret_password_123"
