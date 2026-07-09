@@ -11,8 +11,8 @@ spec:
     size: {{ .Values.cnpg.storageSize | default "10Gi" }}
   bootstrap:
     initdb:
-      database: {{ .Values.config.DB_NAME }}
-      owner: {{ .Values.config.DB_USER }}
+      database: {{ .Values.config.database }}
+      owner: {{ .Values.config.owner }}
       secret:
         name: {{ include "helm-chart.fullname" . }}
 
