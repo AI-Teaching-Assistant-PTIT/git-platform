@@ -80,7 +80,7 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "helm-chart.fullname" . }}-data
+            claimName: {{ include "helm-chart.fullname" . }}
         {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
