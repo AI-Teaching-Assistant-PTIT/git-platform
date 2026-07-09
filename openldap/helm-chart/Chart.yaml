@@ -1,6 +1,0 @@
-apiVersion: v2
-name: helm-chart
-description: OpenLDAP test server
-type: application
-version: 0.1.0
-appVersion: "2.6.7"
