@@ -32,10 +32,22 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
-      - name: Set lowercase image name
+      - name: Set variables
         run: |
           REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_NAME=$REPO" >> $GITHUB_ENV
+          
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Nếu là PR thì lấy prefix pr- kèm theo số ID của PR
+            echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Nếu là Release / Tag thì lấy đúng tên tag đó
+            echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            # Nếu push lên nhánh main thì lấy thời gian commit (Format: YYYYMMDDHHMMSS)
+            COMMIT_TIME=$(git log -1 --format=%cd --date=format:"%Y%m%d%H%M%S")
+            echo "IMAGE_TAG=${COMMIT_TIME}" >> $GITHUB_ENV
+          fi
 
       - name: Build Docker image
         # Build image cục bộ để Trivy quét trước khi push
@@ -65,13 +77,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          
-          # Nếu được trigger bằng Tag hoặc Release, tạo thêm image tag tương ứng
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
-            docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION
-          fi
+          docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
 
@@ -79,11 +85,11 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           # Cập nhật image tag trong file values.yaml
-          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ github.sha }}"/' gitea/helm-chart/values.yaml
+          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' gitea/helm-chart/values.yaml
           
           # Commit và push thay đổi lên repository
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add gitea/helm-chart/values.yaml
-          git commit -m "chore(gitea): update image tag to ${{ github.sha }} [skip ci]" || echo "No changes to commit"
+          git commit -m "chore(gitea): update image tag to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
           git push
