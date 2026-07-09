@@ -164,7 +164,7 @@ autoscaling:
 volumes:
   - name: data
     persistentVolumeClaim:
-      claimName: minio-data
+      claimName: minio-helm-chart-data
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
