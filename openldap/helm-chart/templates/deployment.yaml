@@ -37,7 +37,7 @@ spec:
               subPath: config
             {{- end }}
             - name: ldif-seed
-              mountPath: /container/run/custom
+              mountPath: /container/service/slapd/assets/config/bootstrap/ldif/custom
           livenessProbe:
             tcpSocket:
               port: ldap
