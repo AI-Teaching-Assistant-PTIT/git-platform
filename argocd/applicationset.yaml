@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/NguyenTuKien/platform-services.git
+        repoURL: https://github.com/NguyenTuKien/platform-service.git
         revision: HEAD
         directories:
           - path: '*/helm-chart'
@@ -16,7 +16,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/NguyenTuKien/platform-services.git
+        repoURL: https://github.com/NguyenTuKien/platform-service.git
         targetRevision: HEAD
         path: '{{path}}'
       destination:
