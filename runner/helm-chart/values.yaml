@@ -17,7 +17,7 @@ config:
   GITEA_INSTANCE_URL: "http://gitea:3000"
 
 secret:
-  GITEA_RUNNER_REGISTRATION_TOKEN: "YUZxr3yyDZgTFw5JZ4tDe8rFeRgsTtKMjMQ9OpeZ"
+  GITEA_RUNNER_REGISTRATION_TOKEN: "AgAauMJdDEqOoqn6z0d/NZsqzObw+eBUCtN0Ipi3Yh4OJ1ncay9SIVpm8O3VHb/J/YFVlIJVYu5QOstxLuYEZewMD9w7++bKtTD4tChHP49W3rlqrSUtCqxeocc64tlhdgSG54EzP6mf8f04x/kndPTgUeB7QBIEBbpIr/LLZXx1/Hsu06JBP33E8DzBPNGKwrj6Xq6rpqgzypqEA2GNDM/O20jsw+nx5ZpDtIT7m1iTxwD2BBTUrSKQ7dg5FJbfSpTLYQcb8kMZCJ8TuJtmrPb3qUnyQ1inLhHQ8n7BvFCLxrniCnfIwUPlfMF4e8+3oWekk6FFoP0syzb9hCJIeZdUBo1QC8e5ObwMkhD0ivnjGmRfjOd5kXDXFwEWcOftQHG2gitW2hRr6RyIm4k/25CmRBHZA19fKiKZI1efa1kljVlfS9KsSMwLVmB/3gxXIlLtuE2RIyeRRtvx/xc4OTrxj72WkVr9vdV1oJJyYUpvCNqqxhnG+QROJrRJjq+fR8Kwn9U4ImGo+n84CD421wUOrv/+un0/yzObycbiIWVP/Ug0oc/YB/1B6bUvpRWMilpmxFN4cQYR+JqAdp89y0hudgwLITRJCKD9wdfNblV4yhmwbgWhFjUdYSXgBmPfUvf9+TplJY0pBMZBgdWuuj3lXB0iFbrDrp1ozL15FN0AQJt+7F5NBV7zyU9kXvWNqfh+KBZ6216sCWc+LSS+OQwF/FANV/7MxsbD05k/Kvum+u14IMiJvwyt"
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
