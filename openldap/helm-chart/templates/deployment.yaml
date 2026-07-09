@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: ldap
-              containerPort: 1389
+              containerPort: 389
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -30,10 +30,10 @@ spec:
           volumeMounts:
             {{- if .Values.persistence.enabled }}
             - name: data
-              mountPath: /bitnami/openldap
+              mountPath: /var/lib/ldap
+            - name: config
+              mountPath: /etc/ldap/slapd.d
             {{- end }}
-            - name: ldif-seed
-              mountPath: /ldifs
           livenessProbe:
             tcpSocket:
               port: ldap
@@ -49,7 +49,7 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "helm-chart.fullname" . }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "helm-chart.fullname" . }}-config
         {{- end }}
-        - name: ldif-seed
-          configMap:
-            name: {{ include "helm-chart.fullname" . }}-ldif
