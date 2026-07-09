@@ -31,8 +31,10 @@ spec:
             {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /var/lib/ldap
-            - name: config
+              subPath: data
+            - name: data
               mountPath: /etc/ldap/slapd.d
+              subPath: config
             {{- end }}
           livenessProbe:
             tcpSocket:
@@ -49,7 +51,4 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "helm-chart.fullname" . }}
-        - name: config
-          persistentVolumeClaim:
-            claimName: {{ include "helm-chart.fullname" . }}-config
         {{- end }}
