@@ -4,14 +4,8 @@ on:
   push:
     branches: [ "main" ]
     tags: [ "v*.*.*", "v*" ]
-    paths:
-      - 'gitea/custom/**'
-      - 'gitea/Dockerfile'
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'gitea/custom/**'
-      - 'gitea/Dockerfile'
   release:
     types: [ published ]
 
@@ -19,12 +13,36 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-scan-push:
+  check-trigger:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            gitea:
+              - 'gitea/custom/**'
+              - 'gitea/Dockerfile'
+      - name: Determine if should run
+        id: check
+        run: |
+          if [[ "${{ steps.filter.outputs.gitea }}" == "true" ]] || [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
+
+  ci-pipeline:
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
-      security-events: write # Cần thiết nếu muốn đẩy report scan lên Security tab của GitHub
+      security-events: write
 
     steps:
       - name: Checkout repository
