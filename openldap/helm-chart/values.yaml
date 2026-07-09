@@ -1,0 +1,39 @@
+replicaCount: 1
+
+fullnameOverride: "openldap"
+
+image:
+  repository: bitnami/openldap
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 1389
+
+persistence:
+  enabled: true
+  size: 1Gi
+  accessMode: ReadWriteOnce
+
+config:
+  LDAP_ROOT: "dc=ptit,dc=edu,dc=vn"
+  LDAP_ADMIN_USERNAME: "admin"
+  LDAP_SKIP_DEFAULT_TREE: "no"
+  LDAP_CUSTOM_LDIF_DIR: ""
+
+secret:
+  LDAP_ADMIN_PASSWORD: "Admin1234"
+
+# Seed data - users for testing
+seedUsers:
+  - uid: "sv001"
+    cn: "Nguyen Van A"
+    sn: "Nguyen"
+    mail: "sv001@stu.ptit.edu.vn"
+    password: "Ptit1234"
+  - uid: "sv002"
+    cn: "Tran Thi B"
+    sn: "Tran"
+    mail: "sv002@stu.ptit.edu.vn"
+    password: "Ptit1234"

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helm-chart.fullname" . }}
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+data:
+  LDAP_ROOT: {{ .Values.config.LDAP_ROOT | quote }}
+  LDAP_ADMIN_USERNAME: {{ .Values.config.LDAP_ADMIN_USERNAME | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-ldif
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+data:
+  seed-users.ldif: |
+    # Organizational Units
+    dn: ou=users,{{ .Values.config.LDAP_ROOT }}
+    objectClass: organizationalUnit
+    ou: users
+
+    {{- range .Values.seedUsers }}
+    # User: {{ .uid }}
+    dn: uid={{ .uid }},ou=users,{{ $.Values.config.LDAP_ROOT }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: {{ .uid }}
+    cn: {{ .cn }}
+    sn: {{ .sn }}
+    mail: {{ .mail }}
+    uidNumber: 10001
+    gidNumber: 10001
+    homeDirectory: /home/{{ .uid }}
+    userPassword: {{ .password }}
+
+    {{- end }}
