@@ -5,13 +5,13 @@ on:
     branches: [ "main" ]
     tags: [ "v*.*.*", "v*" ]
     paths:
-      - 'gitea/**'
-      - '.github/workflows/ci.yaml'
+      - 'gitea/custom/**'
+      - 'gitea/Dockerfile'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'gitea/**'
-      - '.github/workflows/ci.yaml'
+      - 'gitea/custom/**'
+      - 'gitea/Dockerfile'
   release:
     types: [ published ]
 
