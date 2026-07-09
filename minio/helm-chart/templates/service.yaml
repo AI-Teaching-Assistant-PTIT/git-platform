@@ -11,9 +11,15 @@ spec:
       targetPort: api
       protocol: TCP
       name: api
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePortApi }}
+      {{- end }}
     - port: {{ .Values.service.consolePort }}
       targetPort: console
       protocol: TCP
       name: console
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePortConsole }}
+      {{- end }}
   selector:
     {{- include "helm-chart.selectorLabels" . | nindent 4 }}

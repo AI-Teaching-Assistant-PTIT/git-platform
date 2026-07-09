@@ -67,9 +67,11 @@ securityContext: {}
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
-  type: ClusterIP
+  type: NodePort
   port: 9000
   consolePort: 9001
+  nodePortApi: 30090
+  nodePortConsole: 30091
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
