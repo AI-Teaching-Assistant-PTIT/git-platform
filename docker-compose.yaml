@@ -9,7 +9,8 @@ services:
     networks:
       - platform_net
   gitea:
-    image: ghcr.io/nguyentukien/nits-platform:2026-07-11_11h00m53s
+    build: ./gitea
+    image: ghcr.io/ai-teaching-assistant-ptit/git-platform:v0.0.2
     container_name: gitea
     restart: unless-stopped
     depends_on:
