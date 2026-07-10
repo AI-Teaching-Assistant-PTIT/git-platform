@@ -64,26 +64,30 @@ services:
     networks:
       - platform_net
 
-  minio:
-    image: minio/minio:RELEASE.2024-06-22T05-26-45Z
-    container_name: minio
-    command: server /data --console-address ":9001"
+  seaweedfs:
+    image: chrislusf/seaweedfs:3.75
+    container_name: seaweedfs
+    command: >
+      /bin/sh -c "
+      mkdir -p /etc/seaweedfs &&
+      echo '{\"identities\":[{\"name\":\"admin\",\"credentials\":[{\"accessKey\":\"$${S3_USER}\",\"secretKey\":\"$${S3_PASSWORD}\"}],\"actions\":[\"Admin\",\"Read\",\"Write\"]}]}' > /etc/seaweedfs/s3.json &&
+      weed server -dir=/data -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json
+      "
     restart: unless-stopped
     environment:
-      - MINIO_ROOT_USER
-      - MINIO_ROOT_PASSWORD
+      - S3_USER
+      - S3_PASSWORD
     volumes:
-      - minio_data:/data
+      - seaweedfs_data:/data
     ports:
       - "9000:9000"
-      - "9001:9001"
     networks:
       - platform_net
 
 volumes:
   gitea_data:
   postgres_data:
-  minio_data:
+  seaweedfs_data:
 
 networks:
   platform_net:

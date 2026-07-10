@@ -7,37 +7,28 @@ replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: minio/minio
+  repository: chrislusf/seaweedfs
   pullPolicy: IfNotPresent
-  tag: "RELEASE.2024-06-22T05-26-45Z"
+  tag: "3.75"
 
 persistence:
   enabled: true
   size: 20Gi
   storageClass: local-path
 
-mcImage:
-  repository: minio/mc
-  pullPolicy: IfNotPresent
-  tag: "latest"
-
 serviceAccount:
   create: true
   automount: true
-
-buckets:
-  - gitea-backup
-  - postgres-backup
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
 
 secret:
-  MINIO_ROOT_USER: "<ENCRYPTED_MINIO_ROOT_USER>"
-  MINIO_ROOT_PASSWORD: "<ENCRYPTED_MINIO_ROOT_PASSWORD>"
+  S3_USER: "<ENCRYPTED_S3_USER>"
+  S3_PASSWORD: "<ENCRYPTED_S3_PASSWORD>"
 # This is to override the chart name.
-nameOverride: "minio"
-fullnameOverride: "minio"
+nameOverride: "seaweedfs"
+fullnameOverride: "seaweedfs"
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -144,14 +135,12 @@ resources: {}
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
-  httpGet:
-    path: /minio/health/live
+  tcpSocket:
     port: 9000
   initialDelaySeconds: 15
   periodSeconds: 20
 readinessProbe:
-  httpGet:
-    path: /minio/health/ready
+  tcpSocket:
     port: 9000
   initialDelaySeconds: 15
   periodSeconds: 20

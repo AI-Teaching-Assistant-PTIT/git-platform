@@ -32,6 +32,35 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: init-s3-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cat <<EOF > /etc/seaweedfs/s3.json
+              {
+                "identities": [
+                  {
+                    "name": "admin",
+                    "credentials": [
+                      {
+                        "accessKey": "$WEED_S3_USER",
+                        "secretKey": "$WEED_S3_PASSWORD"
+                      }
+                    ],
+                    "actions": ["Admin", "Read", "Write"]
+                  }
+                ]
+              }
+              EOF
+          envFrom:
+            - secretRef:
+                name: seaweedfs-secret
+          volumeMounts:
+            - name: config
+              mountPath: /etc/seaweedfs
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
@@ -40,10 +69,10 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["minio", "server", "/data", "--console-address", ":9001"]
+          command: ["weed", "server", "-dir=/data", "-s3", "-s3.port=9000", "-s3.config=/etc/seaweedfs/s3.json"]
           envFrom:
             - secretRef:
-                name: minio-secret
+                name: seaweedfs-secret
           ports:
             - name: api
               containerPort: {{ .Values.service.port }}
@@ -67,10 +96,14 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+            - name: config
+              mountPath: /etc/seaweedfs
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "helm-chart.fullname" . }}
+        - name: config
+          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
