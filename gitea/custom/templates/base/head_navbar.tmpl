@@ -3,7 +3,7 @@
 		<!-- the logo -->
 		<a class="item" id="navbar-logo" href="{{AppSubUrl}}/" aria-label="{{if .IsSigned}}{{ctx.Locale.Tr "dashboard"}}{{else}}{{ctx.Locale.Tr "home_title"}}{{end}}" style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg, #da251d, #ff5b5b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1px;">
 			<img width="28" height="28" src="{{AssetUrlPrefix}}/img/logo.svg" alt="Logo" style="margin-right: 0.5rem; filter: drop-shadow(0 4px 6px rgba(218, 37, 29, 0.3));" aria-hidden="true">
-			GITPTIT
+			{{AppName}}
 		</a>
 
 		<!-- mobile right menu, it must be here because in mobile view, each item is a flex column, the first item is a full row column -->
