@@ -168,7 +168,7 @@ autoscaling:
 volumes:
   - name: data
     persistentVolumeClaim:
-      claimName: minio
+      claimName: "<PVC_NAME>"
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
