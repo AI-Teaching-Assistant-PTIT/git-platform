@@ -18,7 +18,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://postgres-backup/
-      endpointURL: http://minio-helm-chart.default.svc.cluster.local:9000
+      endpointURL: http://minio-stag:9000
       s3Credentials:
         accessKeyId:
           name: minio-secret
