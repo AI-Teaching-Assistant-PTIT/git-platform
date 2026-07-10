@@ -81,6 +81,8 @@ services:
       - seaweedfs_data:/data
     ports:
       - "9000:9000"
+      - "9333:9333"
+      - "8888:8888"
     networks:
       - platform_net
 
