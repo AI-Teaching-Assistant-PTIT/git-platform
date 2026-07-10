@@ -16,13 +16,13 @@ extraPorts:
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
-  size: 10Gi
+  size: 5Gi
 
 
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: ghcr.io/nguyentukien/platform-service
+  repository: ghcr.io/nguyentukien/nits-platform
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.

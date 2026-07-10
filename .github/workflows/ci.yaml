@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: nits-platform
+  IMAGE_NAME: nguyentukien/nits-platform
 
 jobs:
   check-trigger:
@@ -75,10 +75,23 @@ jobs:
         with:
           image-ref: '${{ env.IMAGE_NAME }}:local'
           format: 'table'
-          exit-code: '0' # Đổi thành '1' nếu bạn muốn fail pipeline khi phát hiện lỗi CRITICAL
+          output: 'trivy-report.txt'
+          exit-code: '1' # Đổi thành '1' nếu bạn muốn fail pipeline khi phát hiện lỗi CRITICAL
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
+
+      - name: Add Trivy report to Summary
+        if: always()
+        run: |
+          if [ -f trivy-report.txt ]; then
+            echo "### 🛡️ Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            # In ra console để dễ theo dõi trong log
+            cat trivy-report.txt
+          fi
 
       - name: Log in to the Container registry
         # Chỉ login và push khi merge vào nhánh main (không push khi tạo PR)
@@ -109,3 +122,14 @@ jobs:
           git add gitea/helm-chart/values.yaml
           git commit -m "chore(gitea): update image tag to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
           git push origin HEAD:main
+
+      - name: Generate Job Summary
+        run: |
+          echo "### 🚀 CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "- **Status:** ✅ Image was pushed to GHCR and Helm values were updated." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status:** ℹ️ Build and Trivy scan only (PR mode, no image pushed)." >> $GITHUB_STEP_SUMMARY
+          fi
