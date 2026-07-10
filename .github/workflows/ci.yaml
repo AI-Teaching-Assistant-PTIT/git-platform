@@ -60,13 +60,16 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Nếu là PR thì lấy prefix pr- kèm theo số ID của PR
             echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Nếu là Release / Tag thì lấy đúng tên tag đó
+            echo "TARGET_ENV=stag" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]]; then
+            # Nếu là Release / Tag thì đẩy lên prod
             echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+            echo "TARGET_ENV=prod" >> $GITHUB_ENV
           else
-            # Nếu push lên nhánh main thì lấy thời gian commit (Format: YYYY-MM-DD_HHhMMmSSs)
+            # Nếu push lên nhánh main thì lấy thời gian commit (Format: YYYY-MM-DD_HHhMMmSSs) và đẩy lên stag
             COMMIT_TIME=$(git log -1 --format=%cd --date=format:"%Y-%m-%d_%Hh%Mm%Ss")
             echo "IMAGE_TAG=${COMMIT_TIME}" >> $GITHUB_ENV
+            echo "TARGET_ENV=stag" >> $GITHUB_ENV
           fi
 
       - name: Build Docker image
@@ -120,8 +123,8 @@ jobs:
           # Clone repository nits-secrets
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/NguyenTuKien/nits-secrets.git nits-secrets
           
-          # Cập nhật image tag trong tất cả file values.yaml của gitea (stag, prod,...)
-          find nits-secrets/gitea -type f -name "values.yaml" -exec sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' {} +
+          # Cập nhật image tag trong file values.yaml của môi trường tương ứng (stag hoặc prod)
+          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' nits-secrets/gitea/${{ env.TARGET_ENV }}/values.yaml
           
           # Commit và push thay đổi lên repository nits-secrets
           cd nits-secrets
