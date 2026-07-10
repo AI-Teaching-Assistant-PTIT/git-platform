@@ -11,6 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAME: nits-platform
 
 jobs:
   check-trigger:
@@ -52,9 +53,6 @@ jobs:
 
       - name: Set variables
         run: |
-          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=$REPO" >> $GITHUB_ENV
-          
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # Nếu là PR thì lấy prefix pr- kèm theo số ID của PR
             echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
