@@ -110,18 +110,22 @@ jobs:
           
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
 
-      - name: Update Helm chart values and commit
+      - name: Update Helm chart values and commit to nits-secrets
         if: github.event_name != 'pull_request'
         run: |
-          # Cập nhật image tag trong file values.yaml
-          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' gitea/helm-chart/values.yaml
+          # Clone repository nits-secrets
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/NguyenTuKien/nits-secrets.git nits-secrets
           
-          # Commit và push thay đổi lên repository
+          # Cập nhật image tag trong file values.yaml
+          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' nits-secrets/stag/gitea/values.yaml
+          
+          # Commit và push thay đổi lên repository nits-secrets
+          cd nits-secrets
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add gitea/helm-chart/values.yaml
+          git add stag/gitea/values.yaml
           git commit -m "chore(gitea): update image tag to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
-          git push origin HEAD:main
+          git push origin main
 
       - name: Generate Job Summary
         run: |

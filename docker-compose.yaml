@@ -9,7 +9,7 @@ services:
     networks:
       - platform_net
   gitea:
-    image: ghcr.io/nguyentukien/platform-service:latest
+    image: ghcr.io/nguyentukien/nits-platform:2026-07-11_11h00m53s
     container_name: gitea
     restart: unless-stopped
     depends_on:
