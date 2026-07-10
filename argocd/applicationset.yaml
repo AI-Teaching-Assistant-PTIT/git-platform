@@ -5,20 +5,32 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - git:
-        repoURL: https://github.com/NguyenTuKien/platform-service.git
-        revision: HEAD
-        directories:
-          - path: '*/helm-chart'
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/AI-Teaching-Assistant-PTIT/git-platform.git
+              revision: HEAD
+              directories:
+                - path: '*/helm-chart'
+          - list:
+              elements:
+                - env: stag
+                # - env: prod
   template:
     metadata:
-      name: '{{path[0]}}'
+      name: '{{path[0]}}-{{env}}'
     spec:
       project: default
-      source:
-        repoURL: https://github.com/NguyenTuKien/platform-service.git
-        targetRevision: HEAD
-        path: '{{path}}'
+      sources:
+        - repoURL: https://github.com/AI-Teaching-Assistant-PTIT/git-platform.git
+          targetRevision: HEAD
+          path: '{{path}}'
+          helm:
+            valueFiles:
+              - '$values/{{path[0]}}/{{env}}/values.yaml'
+        - repoURL: https://github.com/AI-Teaching-Assistant-PTIT/config-repo.git
+          targetRevision: main
+          ref: values
       destination:
         server: https://kubernetes.default.svc
         namespace: default
