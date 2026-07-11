@@ -169,6 +169,7 @@ config:
   # Database
   owner: "gitea"
   database: "gitea"
+  TZ: "Asia/Ho_Chi_Minh"
 secret:
   username: "<ENCRYPTED_DB_USER>"
   password: "<ENCRYPTED_DB_PASSWORD>"

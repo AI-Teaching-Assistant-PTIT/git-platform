@@ -47,6 +47,13 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "helm-chart.fullname" . }}
+          {{- if .Values.config }}
+          env:
+            {{- range $k, $v := .Values.config }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

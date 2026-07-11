@@ -7,6 +7,9 @@ metadata:
     {{- include "helm-chart.labels" . | nindent 4 }}
 spec:
   instances: {{ .Values.cnpg.instances | default 1 }}
+  postgresql:
+    parameters:
+      timezone: {{ .Values.config.TZ | quote }}
   storage:
     size: {{ .Values.cnpg.storageSize | default "10Gi" }}
   bootstrap:

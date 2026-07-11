@@ -192,6 +192,7 @@ tolerations: []
 affinity: {}
 
 config:
+  TZ: "Asia/Ho_Chi_Minh"
   GITEA__APP_NAME: "Git Platform"
   GITEA__server__LFS_START_SERVER: "true"
   GITEA__database__DB_TYPE: "postgres"

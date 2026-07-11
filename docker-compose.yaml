@@ -4,6 +4,8 @@ services:
     container_name: cloudflared
     restart: unless-stopped
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
     depends_on:
       - gitea
     networks:
@@ -18,6 +20,7 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - TZ=Asia/Ho_Chi_Minh
       - GITEA__APP_NAME=Git Platform
       - GITEA__server__DOMAIN
       - GITEA__server__ROOT_URL
@@ -56,6 +59,7 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - TZ=Asia/Ho_Chi_Minh
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -77,6 +81,7 @@ services:
     environment:
       - S3_USER
       - S3_PASSWORD
+      - TZ=Asia/Ho_Chi_Minh
     volumes:
       - seaweedfs_data:/data
     ports:

@@ -73,6 +73,13 @@ spec:
           envFrom:
             - secretRef:
                 name: seaweedfs-secret
+          {{- if .Values.config }}
+          env:
+            {{- range $k, $v := .Values.config }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- end }}
           ports:
             - name: api
               containerPort: {{ .Values.service.port }}

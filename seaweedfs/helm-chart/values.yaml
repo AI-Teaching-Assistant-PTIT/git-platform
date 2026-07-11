@@ -35,6 +35,9 @@ imagePullSecrets: []
 secret:
   S3_USER: "<ENCRYPTED_S3_USER>"
   S3_PASSWORD: "<ENCRYPTED_S3_PASSWORD>"
+
+config:
+  TZ: "Asia/Ho_Chi_Minh"
 # This is to override the chart name.
 nameOverride: "seaweedfs"
 fullnameOverride: "seaweedfs"
