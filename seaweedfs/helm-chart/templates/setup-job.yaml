@@ -29,5 +29,4 @@ spec:
               mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $S3_USER $S3_PASSWORD
               {{- range .Values.buckets }}
               mc mb myminio/{{ . }} || true
-              mc anonymous set none myminio/{{ . }}
               {{- end }}
