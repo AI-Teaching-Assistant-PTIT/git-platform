@@ -26,7 +26,7 @@ spec:
             - -c
             - |
               sleep 15
-              mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $WEED_S3_USER $WEED_S3_PASSWORD
+              mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $S3_USER $S3_PASSWORD
               {{- range .Values.buckets }}
               mc mb myminio/{{ . }} || true
               mc anonymous set none myminio/{{ . }}

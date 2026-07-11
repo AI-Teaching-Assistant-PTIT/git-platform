@@ -33,8 +33,8 @@ buckets:
 imagePullSecrets: []
 
 secret:
-  WEED_S3_USER: "<ENCRYPTED_S3_USER>"
-  WEED_S3_PASSWORD: "<ENCRYPTED_S3_PASSWORD>"
+  S3_USER: "<ENCRYPTED_S3_USER>"
+  S3_PASSWORD: "<ENCRYPTED_S3_PASSWORD>"
 
 config:
   TZ: "Asia/Ho_Chi_Minh"

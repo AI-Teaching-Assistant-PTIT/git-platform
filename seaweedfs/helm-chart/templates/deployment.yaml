@@ -46,8 +46,8 @@ spec:
                     "name": "admin",
                     "credentials": [
                       {
-                        "accessKey": "$WEED_S3_USER",
-                        "secretKey": "$WEED_S3_PASSWORD"
+                        "accessKey": "$S3_USER",
+                        "secretKey": "$S3_PASSWORD"
                       }
                     ],
                     "actions": ["Admin", "Read", "Write"]
