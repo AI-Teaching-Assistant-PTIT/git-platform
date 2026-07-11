@@ -75,9 +75,10 @@ spec:
                 name: seaweedfs-secret
           {{- if .Values.config }}
           env:
-            {{- range $k, $v := .Values.config }}
-            - name: {{ $k }}
-              value: {{ $v | quote }}
+            {{- $keys := keys .Values.config | sortAlpha }}
+            {{- range $keys }}
+            - name: {{ . }}
+              value: {{ index $.Values.config . | quote }}
             {{- end }}
           {{- end }}
           ports:
