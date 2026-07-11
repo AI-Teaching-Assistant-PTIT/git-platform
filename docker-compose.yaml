@@ -71,12 +71,9 @@ services:
   seaweedfs:
     image: chrislusf/seaweedfs:3.75
     container_name: seaweedfs
+    entrypoint: ""
     command: >
-      /bin/sh -c "
-      mkdir -p /etc/seaweedfs &&
-      echo '{\"identities\":[{\"name\":\"admin\",\"credentials\":[{\"accessKey\":\"$${S3_USER}\",\"secretKey\":\"$${S3_PASSWORD}\"}],\"actions\":[\"Admin\",\"Read\",\"Write\"]}]}' > /etc/seaweedfs/s3.json &&
-      weed server -dir=/data -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json
-      "
+      /bin/sh -c " mkdir -p /etc/seaweedfs && echo '{\"identities\":[{\"name\":\"admin\",\"credentials\":[{\"accessKey\":\"$${S3_USER}\",\"secretKey\":\"$${S3_PASSWORD}\"}],\"actions\":[\"Admin\",\"Read\",\"Write\"]}]}' > /etc/seaweedfs/s3.json && weed server -dir=/data -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json "
     restart: unless-stopped
     environment:
       - S3_USER
@@ -91,10 +88,26 @@ services:
     networks:
       - platform_net
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - QDRANT_API_KEY
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - platform_net
+
 volumes:
   gitea_data:
   postgres_data:
   seaweedfs_data:
+  qdrant_data:
 
 networks:
   platform_net:

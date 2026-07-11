@@ -1,0 +1,66 @@
+replicaCount: 1
+
+strategy:
+  type: Recreate
+
+image:
+  repository: qdrant/qdrant
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  storageClass: "" # default storage class
+
+config:
+  TZ: "Asia/Ho_Chi_Minh"
+  # QDRANT__SERVICE__API_KEY: "your-secret-key"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "qdrant"
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 6333
+      targetPort: 6333
+    - name: grpc
+      port: 6334
+      targetPort: 6334
+
+ingress:
+  enabled: false
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 6333
+readinessProbe:
+  httpGet:
+    path: /
+    port: 6333
+
+autoscaling:
+  enabled: false
+
+volumeMounts:
+  - name: data
+    mountPath: /qdrant/storage
