@@ -20,15 +20,15 @@ spec:
         name: {{ include "helm-chart.fullname" . }}
   backup:
     barmanObjectStore:
-      destinationPath: {{ .Values.cnpg.backup.destinationPath | default "s3://postgres-backup/" }}
-      endpointURL: {{ .Values.cnpg.backup.endpointURL | default "http://seaweedfs-stag:9000" }}
+      destinationPath: {{ dig "backup" "destinationPath" "s3://postgres-backup/" .Values.cnpg }}
+      endpointURL: {{ dig "backup" "endpointURL" "http://seaweedfs-stag:9000" .Values.cnpg }}
       s3Credentials:
         accessKeyId:
-          name: {{ .Values.cnpg.backup.secretName | default "seaweedfs-secret" }}
-          key: {{ .Values.cnpg.backup.accessKeyIdKey | default "S3_USER" }}
+          name: {{ dig "backup" "secretName" "seaweedfs-secret" .Values.cnpg }}
+          key: {{ dig "backup" "accessKeyIdKey" "S3_USER" .Values.cnpg }}
         secretAccessKey:
-          name: {{ .Values.cnpg.backup.secretName | default "seaweedfs-secret" }}
-          key: {{ .Values.cnpg.backup.secretAccessKeyKey | default "S3_PASSWORD" }}
+          name: {{ dig "backup" "secretName" "seaweedfs-secret" .Values.cnpg }}
+          key: {{ dig "backup" "secretAccessKeyKey" "S3_PASSWORD" .Values.cnpg }}
       wal:
         compression: gzip
 

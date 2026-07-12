@@ -50,11 +50,21 @@ spec:
             {{- end }}
             {{- end }}
             {{- if gt (int .Values.replicaCount) 1 }}
-            # Distributed mode: truyền URI của tất cả peers để Raft hoạt động
+            # Distributed mode
             - name: QDRANT__CLUSTER__ENABLED
               value: "true"
             - name: QDRANT__CLUSTER__P2P__PORT
               value: "6335"
+            # URI của chính pod này (dùng DNS name từ Headless Service)
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: QDRANT__CLUSTER__P2P__URI
+              value: "http://$(MY_POD_NAME).{{ include "helm-chart.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local:6335"
+            # Bootstrap peer: luôn trỏ vào Pod-0 để join cluster
+            - name: QDRANT__CLUSTER__BOOTSTRAP_TIMEOUT_SEC
+              value: "60"
             {{- end }}
           ports:
             {{- range .Values.service.ports }}
