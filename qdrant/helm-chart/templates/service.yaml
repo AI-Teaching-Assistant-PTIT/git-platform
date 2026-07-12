@@ -15,3 +15,29 @@ spec:
     {{- end }}
   selector:
     {{- include "helm-chart.selectorLabels" . | nindent 4 }}
+---
+# Headless Service cho StatefulSet - để các Pod resolve DNS của nhau (Raft P2P)
+{{- if gt (int .Values.replicaCount) 1 }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm-chart.fullname" . }}-headless
+  labels:
+    {{- include "helm-chart.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 6335
+      targetPort: 6335
+      protocol: TCP
+      name: p2p
+    {{- range .Values.service.ports }}
+    - port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: TCP
+      name: {{ .name }}
+    {{- end }}
+  selector:
+    {{- include "helm-chart.selectorLabels" . | nindent 4 }}
+{{- end }}

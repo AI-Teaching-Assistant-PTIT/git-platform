@@ -1,16 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "helm-chart.fullname" . }}
   labels:
     {{- include "helm-chart.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "helm-chart.fullname" . }}-headless
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
-  {{- with .Values.strategy }}
-  strategy:
-    {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:
@@ -44,18 +41,30 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.config }}
           env:
+            {{- if .Values.config }}
             {{- $keys := keys .Values.config | sortAlpha }}
             {{- range $keys }}
             - name: {{ . }}
               value: {{ index $.Values.config . | quote }}
             {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- if gt (int .Values.replicaCount) 1 }}
+            # Distributed mode: truyền URI của tất cả peers để Raft hoạt động
+            - name: QDRANT__CLUSTER__ENABLED
+              value: "true"
+            - name: QDRANT__CLUSTER__P2P__PORT
+              value: "6335"
+            {{- end }}
           ports:
             {{- range .Values.service.ports }}
             - name: {{ .name }}
               containerPort: {{ .targetPort }}
+              protocol: TCP
+            {{- end }}
+            {{- if gt (int .Values.replicaCount) 1 }}
+            - name: p2p
+              containerPort: 6335
               protocol: TCP
             {{- end }}
           {{- with .Values.livenessProbe }}
@@ -70,14 +79,12 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: data
+              mountPath: /qdrant/storage
+            {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ include "helm-chart.fullname" . }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -90,3 +97,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- end }}
