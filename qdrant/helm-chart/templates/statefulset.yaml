@@ -43,14 +43,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if gt (int .Values.replicaCount) 1 }}
           # --uri bắt buộc phải truyền qua CLI flag khi cluster mode bật
-          # Pod-0 tự bootstrap, Pod-1/2 join qua --bootstrap
+          # Pod-0: chỉ --uri (tự tạo cluster mới)
+          # Pod-1/2: --uri + --bootstrap trỏ vào Pod-0
           command: ["/bin/sh", "-c"]
           args:
             - |
               HEADLESS={{ include "helm-chart.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local
               MY_URI="http://${MY_POD_NAME}.${HEADLESS}:6335"
               BOOTSTRAP_URI="http://{{ include "helm-chart.fullname" . }}-0.${HEADLESS}:6335"
-              exec ./qdrant --uri "${MY_URI}" --bootstrap "${BOOTSTRAP_URI}"
+              if [ "${MY_POD_NAME}" = "{{ include "helm-chart.fullname" . }}-0" ]; then
+                exec ./qdrant --uri "${MY_URI}"
+              else
+                exec ./qdrant --uri "${MY_URI}" --bootstrap "${BOOTSTRAP_URI}"
+              fi
           {{- end }}
           env:
             {{- if .Values.config }}
