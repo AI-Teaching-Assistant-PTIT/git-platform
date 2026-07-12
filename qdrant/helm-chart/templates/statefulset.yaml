@@ -41,6 +41,17 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if gt (int .Values.replicaCount) 1 }}
+          # --uri bắt buộc phải truyền qua CLI flag khi cluster mode bật
+          # Pod-0 tự bootstrap, Pod-1/2 join qua --bootstrap
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              HEADLESS={{ include "helm-chart.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local
+              MY_URI="http://${MY_POD_NAME}.${HEADLESS}:6335"
+              BOOTSTRAP_URI="http://{{ include "helm-chart.fullname" . }}-0.${HEADLESS}:6335"
+              exec ./qdrant --uri "${MY_URI}" --bootstrap "${BOOTSTRAP_URI}"
+          {{- end }}
           env:
             {{- if .Values.config }}
             {{- $keys := keys .Values.config | sortAlpha }}
@@ -55,16 +66,11 @@ spec:
               value: "true"
             - name: QDRANT__CLUSTER__P2P__PORT
               value: "6335"
-            # URI của chính pod này (dùng DNS name từ Headless Service)
+            # Dùng Downward API lấy tên pod để build URI trong command
             - name: MY_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: QDRANT__CLUSTER__P2P__URI
-              value: "http://$(MY_POD_NAME).{{ include "helm-chart.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local:6335"
-            # Bootstrap peer: luôn trỏ vào Pod-0 để join cluster
-            - name: QDRANT__CLUSTER__BOOTSTRAP_TIMEOUT_SEC
-              value: "60"
             {{- end }}
           ports:
             {{- range .Values.service.ports }}
