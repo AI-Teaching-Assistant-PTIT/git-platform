@@ -20,15 +20,15 @@ spec:
         name: {{ include "helm-chart.fullname" . }}
   backup:
     barmanObjectStore:
-      destinationPath: s3://postgres-backup/
-      endpointURL: http://minio-stag:9000
+      destinationPath: {{ .Values.cnpg.backup.destinationPath | default "s3://postgres-backup/" }}
+      endpointURL: {{ .Values.cnpg.backup.endpointURL | default "http://seaweedfs-stag:9000" }}
       s3Credentials:
         accessKeyId:
-          name: minio-secret
-          key: MINIO_ROOT_USER
+          name: {{ .Values.cnpg.backup.secretName | default "seaweedfs-secret" }}
+          key: {{ .Values.cnpg.backup.accessKeyIdKey | default "S3_USER" }}
         secretAccessKey:
-          name: minio-secret
-          key: MINIO_ROOT_PASSWORD
+          name: {{ .Values.cnpg.backup.secretName | default "seaweedfs-secret" }}
+          key: {{ .Values.cnpg.backup.secretAccessKeyKey | default "S3_PASSWORD" }}
       wal:
         compression: gzip
 
