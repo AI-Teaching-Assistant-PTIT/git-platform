@@ -33,7 +33,7 @@ spec:
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: default
+        namespace: '{{path[0]}}-{{env}}'
       syncPolicy:
         automated:
           prune: true
