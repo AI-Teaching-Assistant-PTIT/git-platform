@@ -7,6 +7,10 @@ metadata:
     {{- include "helm-chart.labels" . | nindent 4 }}
 spec:
   instances: {{ .Values.cnpg.instances | default 1 }}
+  {{- with .Values.cnpg.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   postgresql:
     parameters:
       timezone: {{ .Values.config.TZ | quote }}
