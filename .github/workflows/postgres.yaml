@@ -52,8 +52,7 @@ jobs:
 
       - name: Set variables
         run: |
-          REPO_LOWERCASE=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=${REPO_LOWERCASE}/database" >> $GITHUB_ENV
+          echo "IMAGE_NAME=database" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
