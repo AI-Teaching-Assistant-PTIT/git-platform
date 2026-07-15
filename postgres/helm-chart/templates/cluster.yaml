@@ -10,6 +10,10 @@ spec:
   {{- with .Values.cnpg.imageName }}
   imageName: {{ . }}
   {{- end }}
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.cnpg.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
