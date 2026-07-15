@@ -52,7 +52,8 @@ jobs:
 
       - name: Set variables
         run: |
-          echo "IMAGE_NAME=database" >> $GITHUB_ENV
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=${OWNER}/database" >> $GITHUB_ENV
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
