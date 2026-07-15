@@ -7,6 +7,7 @@ metadata:
     {{- include "helm-chart.labels" . | nindent 4 }}
 spec:
   instances: {{ .Values.cnpg.instances | default 1 }}
+  imageName: {{ .Values.cnpg.imageName | default "ghcr.io/cloudnative-pg/postgresql:16" }}
   {{- with .Values.cnpg.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
@@ -14,6 +15,9 @@ spec:
   postgresql:
     parameters:
       timezone: {{ .Values.config.TZ | quote }}
+      {{- if .Values.cnpg.pgvector.enabled }}
+      shared_preload_libraries: "vectors.so"
+      {{- end }}
   storage:
     size: {{ .Values.cnpg.storageSize | default "10Gi" }}
   bootstrap:
@@ -22,6 +26,11 @@ spec:
       owner: {{ .Values.config.owner }}
       secret:
         name: {{ include "helm-chart.fullname" . }}
+      {{- if .Values.cnpg.pgvector.enabled }}
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector
+        - CREATE EXTENSION IF NOT EXISTS vectors
+      {{- end }}
   backup:
     barmanObjectStore:
       destinationPath: {{ dig "backup" "destinationPath" "s3://postgres-backup/" .Values.cnpg }}

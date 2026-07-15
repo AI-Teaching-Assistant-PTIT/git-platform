@@ -4,6 +4,10 @@ cnpg:
   enabled: true
   instances: 1
   storageSize: 10Gi
+  # Image hỗ trợ pgvector (pgvecto.rs) - tích hợp sẵn extension vector
+  imageName: "ghcr.io/tensorchord/cloudnative-pgvecto.rs:pg16-v0.3.0"
+  pgvector:
+    enabled: true
 
 image:
   repository: nginx
