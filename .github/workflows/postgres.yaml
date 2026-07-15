@@ -1,0 +1,136 @@
+name: Postgres CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*.*.*", "v*" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  check-trigger:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            postgres:
+              - 'postgres/Dockerfile'
+      - name: Determine if should run
+        id: check
+        run: |
+          if [[ "${{ steps.filter.outputs.postgres }}" == "true" ]] || [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
+
+  ci-pipeline:
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set variables
+        run: |
+          REPO_LOWERCASE=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=${REPO_LOWERCASE}/database" >> $GITHUB_ENV
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "IMAGE_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "TARGET_ENV=stag" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+            echo "TARGET_ENV=prod" >> $GITHUB_ENV
+          else
+            COMMIT_TIME=$(git log -1 --format=%cd --date=format:"%Y-%m-%d_%Hh%Mm%Ss")
+            echo "IMAGE_TAG=${COMMIT_TIME}" >> $GITHUB_ENV
+            echo "TARGET_ENV=stag" >> $GITHUB_ENV
+          fi
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }}:local -f postgres/Dockerfile ./postgres
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}:local'
+          format: 'table'
+          output: 'trivy-report.txt'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      - name: Add Trivy report to Summary
+        if: always()
+        run: |
+          if [ -f trivy-report.txt ]; then
+            echo "### 🛡️ Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat trivy-report.txt
+          fi
+
+      - name: Log in to the Container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag and Push Docker image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:local ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
+
+      - name: Update Helm chart values and commit to config-repo
+        if: github.event_name != 'pull_request'
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/AI-Teaching-Assistant-PTIT/config-repo.git config-repo
+
+          # Cập nhật imageName trong values.yaml của môi trường tương ứng
+          sed -i -E "s|^(\s*imageName:\s*).*$|\1\"${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}\"|" config-repo/postgres/${{ env.TARGET_ENV }}/values.yaml
+
+          cd config-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "chore(database): update imageName to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
+          git push origin main
+
+      - name: Generate Job Summary
+        run: |
+          echo "### 🚀 Postgres CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "- **Status:** ✅ Image was pushed to GHCR and Helm values were updated." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status:** ℹ️ Build and Trivy scan only (PR mode, no image pushed)." >> $GITHUB_STEP_SUMMARY
+          fi
