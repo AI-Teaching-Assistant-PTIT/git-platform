@@ -30,7 +30,7 @@ spec:
       secret:
         name: {{ include "helm-chart.fullname" . }}
       postInitSQL:
-        - CREATE EXTENSION IF NOT EXISTS vector
+        - "CREATE EXTENSION IF NOT EXISTS vector;"
   backup:
     barmanObjectStore:
       destinationPath: {{ dig "backup" "destinationPath" "s3://postgres-backup/" .Values.cnpg }}
