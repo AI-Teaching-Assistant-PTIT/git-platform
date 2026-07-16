@@ -21,8 +21,17 @@ spec:
   postgresql:
     parameters:
       timezone: {{ .Values.config.TZ | quote }}
+      {{- if .Values.cnpg.sharedBuffers }}
+      shared_buffers: {{ .Values.cnpg.sharedBuffers | quote }}
+      {{- end }}
+  affinity:
+    enablePodAntiAffinity: {{ .Values.cnpg.enablePodAntiAffinity | default false }}
+    topologyKey: {{ .Values.cnpg.topologyKey | default "kubernetes.io/hostname" | quote }}
   storage:
     size: {{ .Values.cnpg.storageSize | default "10Gi" }}
+    {{- with .Values.cnpg.storageClass }}
+    storageClass: {{ . }}
+    {{- end }}
   bootstrap:
     initdb:
       database: {{ .Values.config.database }}
@@ -42,6 +51,7 @@ spec:
         secretAccessKey:
           name: {{ dig "backup" "secretName" "seaweedfs-secret" .Values.cnpg }}
           key: {{ dig "backup" "secretAccessKeyKey" "S3_PASSWORD" .Values.cnpg }}
+      retentionPolicy: {{ dig "backup" "retentionPolicy" "30d" .Values.cnpg | quote }}
       wal:
         compression: gzip
 

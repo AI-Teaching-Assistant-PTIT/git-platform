@@ -65,26 +65,14 @@ readinessProbe:
   failureThreshold: 3
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 80
 
-volumes:
-  - name: timezone
-    hostPath:
-      path: /etc/timezone
-  - name: localtime
-    hostPath:
-      path: /etc/localtime
+volumes: []
 
-volumeMounts:
-  - name: timezone
-    mountPath: /etc/timezone
-    readOnly: true
-  - name: localtime
-    mountPath: /etc/localtime
-    readOnly: true
+volumeMounts: []
 
 nodeSelector: {}
 tolerations: []

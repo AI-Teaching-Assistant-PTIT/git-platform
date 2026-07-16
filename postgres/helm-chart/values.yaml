@@ -4,6 +4,12 @@ cnpg:
   enabled: true
   instances: 1
   storageSize: 10Gi
+  storageClass: ""
+  enablePodAntiAffinity: false
+  topologyKey: "kubernetes.io/hostname"
+  sharedBuffers: "128MB"
+  backup:
+    retentionPolicy: "30d"
 
 image:
   repository: nginx
