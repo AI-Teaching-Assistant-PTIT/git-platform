@@ -42,6 +42,8 @@ services:
       - GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION=true
       - GITEA__oauth2_client__USERNAME=preferred_username
       - GITEA__service__VALID_USERNAME_CHARS=a-zA-Z0-9_-.
+    env_file:
+      - .env
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -53,7 +55,7 @@ services:
       - platform_net
 
   postgres:
-    image: pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg15
     container_name: postgres
     environment:
       - POSTGRES_USER
@@ -76,23 +78,141 @@ services:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
       - TZ=Asia/Ho_Chi_Minh
+    env_file:
+      - .env
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web Console
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web Console
     networks:
       - platform_net
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: [ "CMD", "mc", "ready", "local" ]
       interval: 30s
       timeout: 20s
       retries: 3
+
+  docling:
+    image: quay.io/docling-project/docling-serve-cpu:v1.27.0
+    restart: always
+    environment:
+      - DOCLING_SERVE_ENABLE_UI=1
+      - DOCLING_DEVICE=cpu
+      - DOCLING_SERVE_ENG_LOC_NUM_WORKERS=1
+    env_file:
+      - .env
+    volumes:
+      - app-docling-cache:/opt/app-root/src/.cache
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')" ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    networks:
+      - platform_net
+
+  prestart:
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    restart: "no"
+    networks:
+      - platform_net
+    depends_on:
+      postgres:
+        condition: service_started
+    command: bash scripts/prestart.sh
+    environment:
+      - DOMAIN
+      - FRONTEND_HOST
+      - ENVIRONMENT
+      - BACKEND_CORS_ORIGINS
+      - SECRET_KEY
+      - FIRST_SUPERUSER
+      - FIRST_SUPERUSER_PASSWORD
+      - PROJECT_NAME
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${WEBAPP_DB}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    env_file:
+      - .env
+
+  backend:
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    restart: always
+    networks:
+      - platform_net
+    depends_on:
+      postgres:
+        condition: service_started
+      prestart:
+        condition: service_completed_successfully
+    environment:
+      - DOMAIN
+      - FRONTEND_HOST
+      - ENVIRONMENT
+      - BACKEND_CORS_ORIGINS
+      - SECRET_KEY
+      - FIRST_SUPERUSER
+      - FIRST_SUPERUSER_PASSWORD
+      - PROJECT_NAME
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${WEBAPP_DB}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - MINIO_BUCKET=course-knowledge
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+  knowledge-worker:
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    restart: always
+    command: python -m app.knowledge.worker
+    networks:
+      - platform_net
+    depends_on:
+      postgres:
+        condition: service_started
+      minio:
+        condition: service_healthy
+      docling:
+        condition: service_healthy
+    environment:
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${WEBAPP_DB}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - MINIO_ENDPOINT=minio:9000
+      - PROJECT_NAME
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - MINIO_BUCKET=course-knowledge
+      - DOCLING_API_URL=http://docling:5001
+    env_file:
+      - .env
+
+  frontend:
+    image: ghcr.io/ai-teaching-assistant-ptit/frontend:pr-7
+    restart: always
+    networks:
+      - platform_net
+    ports:
+      - "80:80"
 
 volumes:
   gitea_data:
   postgres_data:
   minio_data:
+  app-docling-cache:
 
 networks:
   platform_net:
