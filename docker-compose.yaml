@@ -67,31 +67,32 @@ services:
       - "5432:5432"
     networks:
       - platform_net
-
-  # seaweedfs:
-  #   image: chrislusf/seaweedfs:3.75
-  #   container_name: seaweedfs
-  #   entrypoint: ""
-  #   command: >
-  #     /bin/sh -c " mkdir -p /etc/seaweedfs && echo '{\"identities\":[{\"name\":\"admin\",\"credentials\":[{\"accessKey\":\"$${S3_USER}\",\"secretKey\":\"$${S3_PASSWORD}\"}],\"actions\":[\"Admin\",\"Read\",\"Write\"]}]}' > /etc/seaweedfs/s3.json && weed server -dir=/data -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json "
+  # minio:
+  #   image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+  #   container_name: minio
   #   restart: unless-stopped
+  #   command: server /data --console-address ":9001"
   #   environment:
-  #     - S3_USER
-  #     - S3_PASSWORD
+  #     - MINIO_ROOT_USER
+  #     - MINIO_ROOT_PASSWORD
   #     - TZ=Asia/Ho_Chi_Minh
   #   volumes:
-  #     - seaweedfs_data:/data
+  #     - minio_data:/data
   #   ports:
-  #     - "9000:9000"
-  #     - "9333:9333"
-  #     - "8888:8888"
+  #     - "9000:9000"   # S3 API
+  #     - "9001:9001"   # Web Console
   #   networks:
   #     - platform_net
+  #   healthcheck:
+  #     test: ["CMD", "mc", "ready", "local"]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
 
 volumes:
   gitea_data:
   postgres_data:
-  seaweedfs_data:
+  minio_data:
 
 networks:
   platform_net:

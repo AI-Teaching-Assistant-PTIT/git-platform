@@ -20,13 +20,13 @@ spec:
           imagePullPolicy: {{ .Values.mcImage.pullPolicy }}
           envFrom:
             - secretRef:
-                name: seaweedfs-secret
+                name: minio-secret
           command:
             - /bin/sh
             - -c
             - |
               sleep 15
-              mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $S3_USER $S3_PASSWORD
+              mc alias set myminio http://{{ include "helm-chart.fullname" . }}:{{ .Values.service.port }} $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
               {{- range .Values.buckets }}
               mc mb myminio/{{ . }} || true
               {{- end }}

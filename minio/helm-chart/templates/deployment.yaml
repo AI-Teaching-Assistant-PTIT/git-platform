@@ -36,35 +36,6 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      initContainers:
-        - name: init-s3-config
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              cat <<EOF > /etc/seaweedfs/s3.json
-              {
-                "identities": [
-                  {
-                    "name": "admin",
-                    "credentials": [
-                      {
-                        "accessKey": "$S3_USER",
-                        "secretKey": "$S3_PASSWORD"
-                      }
-                    ],
-                    "actions": ["Admin", "Read", "Write"]
-                  }
-                ]
-              }
-              EOF
-          envFrom:
-            - secretRef:
-                name: seaweedfs-secret
-          volumeMounts:
-            - name: config
-              mountPath: /etc/seaweedfs
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
@@ -73,10 +44,14 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["weed", "server", "-dir=/data", "-s3", "-s3.port=9000", "-s3.config=/etc/seaweedfs/s3.json"]
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":{{ .Values.service.consolePort }}"
           envFrom:
             - secretRef:
-                name: seaweedfs-secret
+                name: minio-secret
           {{- if .Values.config }}
           env:
             {{- $keys := keys .Values.config | sortAlpha }}
@@ -89,11 +64,8 @@ spec:
             - name: api
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-            - name: master
-              containerPort: {{ .Values.service.masterPort }}
-              protocol: TCP
-            - name: filer
-              containerPort: {{ .Values.service.filerPort }}
+            - name: console
+              containerPort: {{ .Values.service.consolePort }}
               protocol: TCP
           {{- with .Values.livenessProbe }}
           livenessProbe:
@@ -111,14 +83,10 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-            - name: config
-              mountPath: /etc/seaweedfs
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "helm-chart.fullname" . }}
-        - name: config
-          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

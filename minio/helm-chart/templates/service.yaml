@@ -14,13 +14,9 @@ spec:
       {{- if eq .Values.service.type "NodePort" }}
       nodePort: {{ .Values.service.nodePortApi }}
       {{- end }}
-    - port: {{ .Values.service.masterPort }}
-      targetPort: master
+    - port: {{ .Values.service.consolePort }}
+      targetPort: console
       protocol: TCP
-      name: master
-    - port: {{ .Values.service.filerPort }}
-      targetPort: filer
-      protocol: TCP
-      name: filer
+      name: console
   selector:
     {{- include "helm-chart.selectorLabels" . | nindent 4 }}

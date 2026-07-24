@@ -4,9 +4,9 @@ strategy:
   type: Recreate
 
 image:
-  repository: chrislusf/seaweedfs
+  repository: minio/minio
   pullPolicy: IfNotPresent
-  tag: "3.75"
+  tag: "RELEASE.2025-04-22T22-12-26Z"
 
 persistence:
   enabled: true
@@ -31,14 +31,15 @@ buckets:
 imagePullSecrets: []
 
 secret:
-  S3_USER: "<ENCRYPTED_S3_USER>"
-  S3_PASSWORD: "<ENCRYPTED_S3_PASSWORD>"
+  MINIO_ROOT_USER: "<ENCRYPTED_MINIO_ROOT_USER>"
+  MINIO_ROOT_PASSWORD: "<ENCRYPTED_MINIO_ROOT_PASSWORD>"
 
 config:
   TZ: "Asia/Ho_Chi_Minh"
+  MINIO_VOLUMES: "/data"
 
-nameOverride: "seaweedfs"
-fullnameOverride: "seaweedfs"
+nameOverride: "minio"
+fullnameOverride: "minio"
 
 podAnnotations: {}
 podLabels: {}
@@ -47,9 +48,8 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 9000
-  masterPort: 9333
-  filerPort: 8888
+  port: 9000        # S3 API port
+  consolePort: 9001 # Web Console port
 
 resources:
   requests:
@@ -60,14 +60,16 @@ resources:
     memory: 1Gi
 
 livenessProbe:
-  tcpSocket:
+  httpGet:
+    path: /minio/health/live
     port: 9000
-  initialDelaySeconds: 15
+  initialDelaySeconds: 30
   periodSeconds: 20
 readinessProbe:
-  tcpSocket:
+  httpGet:
+    path: /minio/health/ready
     port: 9000
-  initialDelaySeconds: 15
+  initialDelaySeconds: 30
   periodSeconds: 20
 
 autoscaling:
