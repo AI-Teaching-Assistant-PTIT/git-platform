@@ -28,6 +28,9 @@ spec:
           command:
             - bash
             - scripts/prestart.sh
+          envFrom:
+            - secretRef:
+                name: webapp-secret
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}

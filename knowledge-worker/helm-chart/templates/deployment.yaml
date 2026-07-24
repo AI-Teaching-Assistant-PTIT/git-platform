@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "knowledge-worker.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "knowledge-worker.selectorLabels" . | nindent 6 }}
@@ -26,8 +28,15 @@ spec:
           command:
             {{- toYaml .Values.command | nindent 12 }}
           {{- end }}
+          envFrom:
+            - secretRef:
+                name: webapp-secret
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
