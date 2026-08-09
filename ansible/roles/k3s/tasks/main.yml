@@ -1,0 +1,70 @@
+---
+# roles/k3s/tasks/main.yml
+# Cài đặt K3s single-node cluster
+
+- name: Check if k3s is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_bin
+
+- name: Check current k3s version
+  command: k3s --version
+  register: k3s_current_version
+  changed_when: false
+  failed_when: false
+  when: k3s_bin.stat.exists
+
+- name: Download and install k3s
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" sh -s - {{ k3s_install_args }}
+  when: >
+    not k3s_bin.stat.exists or
+    k3s_version not in (k3s_current_version.stdout | default(''))
+  become: true
+
+- name: Wait for k3s to be ready
+  command: kubectl get nodes
+  register: nodes_ready
+  retries: 20
+  delay: 5
+  until: "'Ready' in nodes_ready.stdout"
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"
+  become: true
+
+- name: Create .kube directory for user
+  file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0755'
+
+- name: Copy kubeconfig for current user
+  copy:
+    src: "{{ kubeconfig }}"
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    remote_src: true
+    mode: '0600'
+  become: true
+
+- name: Set KUBECONFIG fact for subsequent tasks
+  set_fact:
+    kubeconfig_user: "{{ ansible_env.HOME }}/.kube/config"
+
+- name: Install local-path-provisioner (storage)
+  command: >
+    kubectl apply -f
+    https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: lpp_result
+  changed_when: "'configured' in lpp_result.stdout or 'created' in lpp_result.stdout"
+
+- name: Set local-path as default StorageClass
+  command: >
+    kubectl patch storageclass local-path
+    -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: sc_patch
+  changed_when: "'patched' in sc_patch.stdout"
+  failed_when: false

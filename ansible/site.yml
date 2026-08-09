@@ -1,0 +1,16 @@
+---
+# site.yml — Master playbook: gỡ k3s cũ rồi cài lại toàn bộ stack
+# Chạy: ansible-playbook -i inventory/hosts.yml site.yml -K
+
+- name: Setup K8s Platform
+  hosts: all
+  become: false
+  gather_facts: true
+
+  roles:
+    - role: k3s_uninstall   # gỡ k3s nếu đang chạy
+    - role: k3s             # cài k3s fresh
+    - role: helm            # cài / verify Helm
+    - role: kubeseal        # Sealed Secrets controller + CLI
+    - role: cnpg            # CloudNative PG operator
+    - role: argocd          # ArgoCD + set password + ApplicationSet

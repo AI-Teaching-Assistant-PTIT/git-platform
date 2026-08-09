@@ -1,0 +1,11 @@
+---
+# uninstall.yml — Chỉ gỡ k3s (không cài lại)
+# Chạy: ansible-playbook -i inventory/hosts.yml uninstall.yml -K
+
+- name: Uninstall K3s
+  hosts: all
+  become: false
+  gather_facts: true
+
+  roles:
+    - role: k3s_uninstall

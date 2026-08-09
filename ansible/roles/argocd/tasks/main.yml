@@ -1,0 +1,152 @@
+---
+# roles/argocd/tasks/main.yml
+# Cài ArgoCD + apply ApplicationSet
+
+- name: Create ArgoCD namespace
+  command: kubectl create namespace {{ argocd_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: ns_create
+  changed_when: ns_create.rc == 0
+  failed_when: ns_create.rc != 0 and 'already exists' not in ns_create.stderr
+
+- name: Install ArgoCD {{ argocd_version }}
+  command: >
+    kubectl apply -n {{ argocd_namespace }}
+    -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: argocd_apply
+  changed_when: "'configured' in argocd_apply.stdout or 'created' in argocd_apply.stdout"
+
+- name: Wait for ArgoCD server to be ready
+  command: >
+    kubectl rollout status deployment/argocd-server
+    -n {{ argocd_namespace }} --timeout=180s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+
+- name: Wait for ArgoCD application-controller to be ready
+  command: >
+    kubectl rollout status statefulset/argocd-application-controller
+    -n {{ argocd_namespace }} --timeout=180s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+
+# ── ArgoCD CLI ──────────────────────────────────────────────────────────────────
+
+- name: Check argocd CLI
+  command: argocd version --client --short
+  register: argocd_cli
+  changed_when: false
+  failed_when: false
+
+- name: Download argocd CLI {{ argocd_version }}
+  get_url:
+    url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-linux-amd64"
+    dest: /usr/local/bin/argocd
+    mode: '0755'
+  become: true
+  when: argocd_cli.rc != 0 or argocd_version not in (argocd_cli.stdout | default(''))
+
+# ── Expose + set password ───────────────────────────────────────────────────────
+
+- name: Patch ArgoCD server service to NodePort for local access
+  command: >
+    kubectl patch svc argocd-server -n {{ argocd_namespace }}
+    -p '{"spec": {"type": "NodePort"}}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: svc_patch
+  changed_when: "'patched' in svc_patch.stdout"
+  failed_when: false
+
+- name: Get ArgoCD NodePort
+  command: >
+    kubectl get svc argocd-server -n {{ argocd_namespace }}
+    -o jsonpath='{.spec.ports[?(@.port==443)].nodePort}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: argocd_nodeport
+  changed_when: false
+
+- name: Get ArgoCD initial admin secret
+  command: >
+    kubectl get secret argocd-initial-admin-secret
+    -n {{ argocd_namespace }}
+    -o jsonpath='{.data.password}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: argocd_init_b64
+  changed_when: false
+
+- name: Decode initial admin password
+  set_fact:
+    argocd_init_password: "{{ argocd_init_b64.stdout | b64decode }}"
+
+- name: Login to ArgoCD with initial password
+  command: >
+    argocd login localhost:{{ argocd_nodeport.stdout }}
+    --username admin
+    --password "{{ argocd_init_password }}"
+    --insecure
+  register: argocd_login
+  changed_when: false
+  failed_when: false
+
+- name: Set ArgoCD admin password to "{{ argocd_admin_password }}"
+  command: >
+    argocd account update-password
+    --current-password "{{ argocd_init_password }}"
+    --new-password "{{ argocd_admin_password }}"
+    --insecure
+  register: pwd_update
+  changed_when: "'Password updated' in pwd_update.stdout"
+  failed_when: false
+  when: argocd_login.rc == 0
+
+- name: Display ArgoCD access info
+  debug:
+    msg:
+      - "ArgoCD UI : https://localhost:{{ argocd_nodeport.stdout }}"
+      - "Username  : admin"
+      - "Password  : {{ argocd_admin_password }}"
+
+# ── GHCR imagePullSecret ────────────────────────────────────────────────────────
+
+- name: Create GHCR imagePullSecret in default namespace
+  command: >
+    kubectl create secret docker-registry ghcr-secret
+    --docker-server=ghcr.io
+    --docker-username={{ ghcr_username }}
+    --docker-password={{ ghcr_token }}
+    --docker-email={{ ghcr_email }}
+    --namespace default
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: ghcr_secret
+  changed_when: ghcr_secret.rc == 0
+  failed_when: ghcr_secret.rc != 0 and 'already exists' not in ghcr_secret.stderr
+  when: ghcr_username != "" and ghcr_token != ""
+
+# ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
+
+- name: Apply ArgoCD ApplicationSet
+  command: kubectl apply -f {{ applicationset_file }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: appset_apply
+  changed_when: "'configured' in appset_apply.stdout or 'created' in appset_apply.stdout"
+
+- name: Show ApplicationSet status
+  command: kubectl get applicationset -n {{ argocd_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+  register: appset_status
+
+- name: Display ApplicationSet status
+  debug:
+    var: appset_status.stdout_lines

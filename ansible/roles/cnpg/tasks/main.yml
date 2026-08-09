@@ -1,0 +1,36 @@
+---
+# roles/cnpg/tasks/main.yml
+# Cài CloudNative PG operator (cần cho postgres helm chart)
+
+- name: Add CNPG Helm repo
+  command: helm repo add cnpg https://cloudnative-pg.github.io/charts
+  register: repo_add
+  changed_when: "'already exists' not in repo_add.stderr"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+
+- name: Update Helm repos
+  command: helm repo update
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+
+- name: Install CNPG operator
+  command: >
+    helm upgrade --install cnpg cnpg/cloudnative-pg
+    --namespace cnpg-system
+    --create-namespace
+    --version {{ cnpg_version[1:] }}
+    --wait --timeout 5m
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: cnpg_install
+  changed_when: "'already up to date' not in cnpg_install.stdout"
+
+- name: Wait for CNPG operator to be ready
+  command: >
+    kubectl rollout status deployment/cnpg-cloudnative-pg
+    -n cnpg-system --timeout=120s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false

@@ -1,0 +1,79 @@
+---
+# roles/kubeseal/tasks/main.yml
+# Cài Sealed Secrets controller + kubeseal CLI
+
+- name: Check if kubeseal CLI is installed
+  command: kubeseal --version
+  register: kubeseal_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install kubeseal CLI {{ kubeseal_version }}
+  block:
+    - name: Set kubeseal arch
+      set_fact:
+        kubeseal_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+
+    - name: Download kubeseal binary
+      get_url:
+        url: "https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ kubeseal_version }}/kubeseal-{{ kubeseal_version[1:] }}-linux-{{ kubeseal_arch }}.tar.gz"
+        dest: /tmp/kubeseal.tar.gz
+        mode: '0644'
+
+    - name: Extract kubeseal
+      unarchive:
+        src: /tmp/kubeseal.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: Install kubeseal to /usr/local/bin
+      copy:
+        src: /tmp/kubeseal
+        dest: /usr/local/bin/kubeseal
+        mode: '0755'
+        remote_src: true
+      become: true
+
+    - name: Cleanup
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/kubeseal.tar.gz
+        - /tmp/kubeseal
+  when: >
+    kubeseal_installed.rc != 0 or
+    kubeseal_version[1:] not in (kubeseal_installed.stdout | default(''))
+
+- name: Add Sealed Secrets Helm repo
+  command: helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+  register: repo_add
+  changed_when: "'already exists' not in repo_add.stderr"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+
+- name: Update Helm repos
+  command: helm repo update
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+
+- name: Install Sealed Secrets controller
+  command: >
+    helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets
+    --namespace {{ sealed_secrets_namespace }}
+    --version {{ kubeseal_version[1:] }}
+    --set fullnameOverride=sealed-secrets-controller
+    --wait --timeout 3m
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: ss_install
+  changed_when: "'already up to date' not in ss_install.stdout"
+
+- name: Wait for Sealed Secrets controller to be ready
+  command: >
+    kubectl rollout status deployment/sealed-secrets-controller
+    -n {{ sealed_secrets_namespace }} --timeout=120s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false

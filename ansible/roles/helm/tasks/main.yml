@@ -1,0 +1,31 @@
+---
+# roles/helm/tasks/main.yml
+# Cài Helm nếu chưa có hoặc version cũ
+
+- name: Check if helm is installed
+  command: helm version --short
+  register: helm_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install Helm {{ helm_version }}
+  block:
+    - name: Download Helm installer
+      get_url:
+        url: "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+        dest: /tmp/get-helm.sh
+        mode: '0755'
+
+    - name: Run Helm installer
+      command: /tmp/get-helm.sh
+      environment:
+        DESIRED_VERSION: "{{ helm_version }}"
+      become: true
+
+    - name: Cleanup installer
+      file:
+        path: /tmp/get-helm.sh
+        state: absent
+  when: >
+    helm_installed.rc != 0 or
+    helm_version not in (helm_installed.stdout | default(''))

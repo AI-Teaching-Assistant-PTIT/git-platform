@@ -1,0 +1,60 @@
+---
+# roles/k3s_uninstall/tasks/main.yml
+# Gỡ k3s hoàn toàn
+
+- name: Check if k3s is installed
+  stat:
+    path: /usr/local/bin/k3s-uninstall.sh
+  register: k3s_uninstall_script
+
+- name: Stop k3s service
+  systemd:
+    name: k3s
+    state: stopped
+    enabled: false
+  become: true
+  failed_when: false
+  when: k3s_uninstall_script.stat.exists
+
+- name: Run k3s uninstall script
+  command: /usr/local/bin/k3s-uninstall.sh
+  become: true
+  when: k3s_uninstall_script.stat.exists
+  register: uninstall_result
+
+- name: Remove k3s agent uninstall script (if exists)
+  command: /usr/local/bin/k3s-agent-uninstall.sh
+  become: true
+  failed_when: false
+
+- name: Clean up .kube/config
+  file:
+    path: "{{ ansible_env.HOME }}/.kube/config"
+    state: absent
+
+- name: Clean up k3s data directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  loop:
+    - /etc/rancher/k3s
+    - /var/lib/rancher/k3s
+    - /var/lib/kubelet
+    - /run/k3s
+  failed_when: false
+
+- name: Kill any lingering k3s processes
+  shell: pkill -9 k3s || true
+  become: true
+  changed_when: false
+
+- name: k3s uninstall completed
+  debug:
+    msg: "k3s has been completely removed."
+  when: k3s_uninstall_script.stat.exists
+
+- name: k3s was not installed
+  debug:
+    msg: "k3s was not found, nothing to uninstall."
+  when: not k3s_uninstall_script.stat.exists
