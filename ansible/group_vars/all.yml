@@ -20,7 +20,7 @@ sealed_secrets_namespace: kube-system
 cnpg_version: "v0.24.0"
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
-applicationset_file: "{{ playbook_dir }}/../platform/argocd/applicationset.yaml"
+applicationset_file: "{{ playbook_dir }}/../argocd/applicationset.yaml"
 
 # ── GHCR Secret ────────────────────────────────────────────────────────────────
 ghcr_username: ""        # điền GHCR username
