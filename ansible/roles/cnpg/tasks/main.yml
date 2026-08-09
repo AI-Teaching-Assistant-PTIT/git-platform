@@ -20,7 +20,6 @@
     helm upgrade --install cnpg cnpg/cloudnative-pg
     --namespace cnpg-system
     --create-namespace
-    --version {{ cnpg_version[1:] }}
     --wait --timeout 5m
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"

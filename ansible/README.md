@@ -34,13 +34,16 @@ ghcr_email: "your@email.com"
 ## Chạy
 
 ```bash
-cd ansible/
+# Từ thư mục NITS/
+cd platform/ansible
 
-# Cài toàn bộ (gỡ k3s cũ rồi cài lại)
-ansible-playbook -i inventory/hosts.yml site.yml -K
+# Cài toàn bộ (gỡ k3s cũ + cài lại)
+ansible-playbook -i inventory/hosts.yml site.yml \
+  -e @../../config/ansible/group_vars/all.yml -K
 
 # Chỉ gỡ k3s
-ansible-playbook -i inventory/hosts.yml uninstall.yml -K
+ansible-playbook -i inventory/hosts.yml uninstall.yml \
+  -e @../../config/ansible/group_vars/all.yml -K
 ```
 
 > `-K` để nhập sudo password khi cần.

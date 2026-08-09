@@ -46,7 +46,7 @@
     kubeseal_version[1:] not in (kubeseal_installed.stdout | default(''))
 
 - name: Add Sealed Secrets Helm repo
-  command: helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+  command: helm repo add sealed-secrets https://bitnami.github.io/sealed-secrets
   register: repo_add
   changed_when: "'already exists' not in repo_add.stderr"
   environment:
@@ -62,7 +62,6 @@
   command: >
     helm upgrade --install sealed-secrets sealed-secrets/sealed-secrets
     --namespace {{ sealed_secrets_namespace }}
-    --version {{ kubeseal_version[1:] }}
     --set fullnameOverride=sealed-secrets-controller
     --wait --timeout 3m
   environment:

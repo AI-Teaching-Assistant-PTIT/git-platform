@@ -44,6 +44,7 @@
     dest: "{{ ansible_env.HOME }}/.kube/config"
     remote_src: true
     mode: '0600'
+    owner: "{{ ansible_user_id }}"
   become: true
 
 - name: Set KUBECONFIG fact for subsequent tasks
