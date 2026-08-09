@@ -1,0 +1,39 @@
+image:
+  repository: ghcr.io/ai-teaching-assistant-ptit/embedding-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+# imagePullSecrets:
+#   - name: ghcr-secret
+
+replicaCount: 1
+
+env:
+  MODEL_NAME: "sentence-transformers/all-MiniLM-L6-v2"
+  EMBEDDING_DEVICE: "cpu"
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  mountPath: /opt/models

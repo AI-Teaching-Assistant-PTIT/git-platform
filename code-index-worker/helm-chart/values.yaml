@@ -1,0 +1,33 @@
+image:
+  repository: ghcr.io/ai-teaching-assistant-ptit/backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+imagePullSecrets:
+  - name: ghcr-secret
+
+replicaCount: 1
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+
+command:
+  - python
+  - -m
+  - app.code_intelligence.worker
+
+env:
+  POSTGRES_SERVER: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: ""
+  # Gitea
+  GITEA_BASE_URL: ""
+  GITEA_TOKEN: ""
+  GITEA_ORG: ""
+  GITEA_TIMEOUT_SECONDS: "20"

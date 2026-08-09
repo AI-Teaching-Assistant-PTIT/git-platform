@@ -1,0 +1,6 @@
+apiVersion: v2
+name: code-index-worker
+description: Code Index Worker for AI Teaching Assistant
+type: application
+version: 0.1.0
+appVersion: "latest"
