@@ -19,6 +19,8 @@
         url: "https://github.com/bitnami-labs/sealed-secrets/releases/download/{{ kubeseal_version }}/kubeseal-{{ kubeseal_version[1:] }}-linux-{{ kubeseal_arch }}.tar.gz"
         dest: /tmp/kubeseal.tar.gz
         mode: '0644'
+        force: true
+        timeout: 300
 
     - name: Extract kubeseal
       unarchive:
