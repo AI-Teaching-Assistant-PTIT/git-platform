@@ -21,6 +21,15 @@ ansible/
     └── argocd/           # ArgoCD + password + ApplicationSet
 ```
 
+## Cài đặt Ansible
+
+Trước khi chạy bất kỳ lệnh nào, bạn cần đảm bảo máy đã được cài đặt Ansible (Ubuntu/Debian):
+
+```bash
+sudo apt update
+sudo apt install -y ansible
+```
+
 ## Trước khi chạy
 
 Điền các biến bí mật vào `group_vars/all.yml`:
