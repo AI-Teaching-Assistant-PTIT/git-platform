@@ -1,6 +1,7 @@
 ---
-# site.yml — Master playbook: gỡ k3s cũ rồi cài lại toàn bộ stack
+# site.yml — Master playbook: cài toàn bộ stack (idempotent)
 # Chạy: ansible-playbook -i inventory/hosts.yml site.yml -K
+# Gỡ k3s trước khi cài lại: ansible-playbook -i inventory/hosts.yml site.yml -K -e force_reinstall=true
 
 - name: Setup K8s Platform
   hosts: all
@@ -8,8 +9,9 @@
   gather_facts: true
 
   roles:
-    - role: k3s_uninstall   # gỡ k3s nếu đang chạy
-    - role: k3s             # cài k3s fresh
+    - role: k3s_uninstall   # chỉ gỡ k3s khi force_reinstall=true
+      when: force_reinstall | default(false) | bool
+    - role: k3s             # cài k3s (skip nếu đúng version)
     - role: helm            # cài / verify Helm
     - role: kubeseal        # Sealed Secrets controller + CLI
     - role: cnpg            # CloudNative PG operator

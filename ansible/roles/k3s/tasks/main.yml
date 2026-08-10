@@ -2,70 +2,92 @@
 # roles/k3s/tasks/main.yml
 # Cài đặt K3s single-node cluster
 
-- name: Check if k3s is already installed
-  stat:
-    path: /usr/local/bin/k3s
-  register: k3s_bin
+- name: 🔍 Kiểm tra trạng thái k3s
+  block:
+    - name: Kiểm tra k3s binary đã tồn tại chưa
+      stat:
+        path: /usr/local/bin/k3s
+      register: k3s_bin
 
-- name: Check current k3s version
-  command: k3s --version
-  register: k3s_current_version
-  changed_when: false
-  failed_when: false
-  when: k3s_bin.stat.exists
+    - name: Lấy phiên bản k3s hiện tại
+      command: k3s --version
+      register: k3s_current_version
+      changed_when: false
+      failed_when: false
+      when: k3s_bin.stat.exists
+  tags: check
 
-- name: Download and install k3s
-  shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" sh -s - {{ k3s_install_args }}
+- name: ⚙️ Cài đặt và cập nhật k3s
+  block:
+    - name: Tải k3s binary (tự động retry và resume nếu rớt mạng)
+      shell: |
+        curl -fL --retry 10 --retry-delay 3 -C - \
+          -o /usr/local/bin/k3s \
+          "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version | replace('+', '%2B') }}/k3s"
+        chmod +x /usr/local/bin/k3s
+      become: true
+
+    - name: Chạy script cài đặt k3s (bỏ qua bước tải)
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_VERSION="{{ k3s_version }}" sh -s - {{ k3s_install_args | default('') }}
+      become: true
+
   when: >
     not k3s_bin.stat.exists or
     k3s_version not in (k3s_current_version.stdout | default(''))
-  become: true
+  tags: install
 
-- name: Wait for k3s to be ready
-  command: kubectl get nodes
-  register: nodes_ready
-  retries: 20
-  delay: 5
-  until: "'Ready' in nodes_ready.stdout"
-  environment:
-    KUBECONFIG: "{{ kubeconfig }}"
-  become: true
+- name: 🔧 Cấu hình Kubeconfig cho user
+  block:
+    - name: Chờ k3s cluster chuyển sang trạng thái Ready
+      command: kubectl get nodes
+      register: nodes_ready
+      retries: 20
+      delay: 5
+      until: "'Ready' in nodes_ready.stdout"
+      environment:
+        KUBECONFIG: "{{ kubeconfig | default('/etc/rancher/k3s/k3s.yaml') }}"
+      become: true
+      changed_when: false
 
-- name: Create .kube directory for user
-  file:
-    path: "{{ ansible_env.HOME }}/.kube"
-    state: directory
-    mode: '0755'
+    - name: Tạo thư mục .kube cho user
+      file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0755'
 
-- name: Copy kubeconfig for current user
-  copy:
-    src: "{{ kubeconfig }}"
-    dest: "{{ ansible_env.HOME }}/.kube/config"
-    remote_src: true
-    mode: '0600'
-    owner: "{{ ansible_user_id }}"
-  become: true
+    - name: Sao chép kubeconfig vào thư mục home
+      copy:
+        src: "{{ kubeconfig | default('/etc/rancher/k3s/k3s.yaml') }}"
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        remote_src: true
+        mode: '0600'
+        owner: "{{ ansible_user_id }}"
+      become: true
+      
+    - name: Lưu trữ biến môi trường KUBECONFIG
+      set_fact:
+        kubeconfig_user: "{{ ansible_env.HOME }}/.kube/config"
+  tags: kubeconfig
 
-- name: Set KUBECONFIG fact for subsequent tasks
-  set_fact:
-    kubeconfig_user: "{{ ansible_env.HOME }}/.kube/config"
+- name: 💾 Cấu hình StorageClass (local-path-provisioner)
+  block:
+    - name: Cài đặt local-path-provisioner
+      command: >
+        kubectl apply -f
+        https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
+      environment:
+        KUBECONFIG: "{{ kubeconfig_user }}"
+      register: lpp_result
+      changed_when: "'configured' in lpp_result.stdout or 'created' in lpp_result.stdout"
 
-- name: Install local-path-provisioner (storage)
-  command: >
-    kubectl apply -f
-    https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  register: lpp_result
-  changed_when: "'configured' in lpp_result.stdout or 'created' in lpp_result.stdout"
-
-- name: Set local-path as default StorageClass
-  command: >
-    kubectl patch storageclass local-path
-    -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  register: sc_patch
-  changed_when: "'patched' in sc_patch.stdout"
-  failed_when: false
+    - name: Thiết lập local-path làm StorageClass mặc định
+      command: >
+        kubectl patch storageclass local-path
+        -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+      environment:
+        KUBECONFIG: "{{ kubeconfig_user }}"
+      register: sc_patch
+      changed_when: "'patched' in sc_patch.stdout"
+      failed_when: false
+  tags: storage

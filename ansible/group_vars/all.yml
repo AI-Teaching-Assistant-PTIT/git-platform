@@ -1,5 +1,5 @@
 # ── K3s ────────────────────────────────────────────────────────────────────────
-k3s_version: "v1.34.9+k3s1"
+k3s_version: "v1.36.3+k3s1"
 k3s_install_args: ""   # giữ defaults: Traefik, servicelb, local-path đều enabled
 
 kubeconfig: /etc/rancher/k3s/k3s.yaml
@@ -23,6 +23,6 @@ cnpg_version: "v0.24.0"
 applicationset_file: "{{ playbook_dir }}/../argocd/applicationset.yaml"
 
 # ── GHCR Secret ────────────────────────────────────────────────────────────────
-ghcr_username: ""        # điền GHCR username
-ghcr_token: ""           # điền GHCR PAT
-ghcr_email: ""           # email GitHub
+ghcr_username: "ngtukien"        # điền GHCR username
+ghcr_token: "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"           # điền GHCR PAT
+ghcr_email: "ngtukien218.study@gmail.com"           # email GitHub
