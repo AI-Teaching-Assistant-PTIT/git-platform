@@ -131,6 +131,60 @@
   failed_when: ghcr_secret.rc != 0 and 'already exists' not in ghcr_secret.stderr
   when: ghcr_username != "" and ghcr_token != ""
 
+# ── ArgoCD Repository Credentials ──────────────────────────────────────────────
+
+- name: Create ArgoCD Git Repository Secret for git-platform
+  command: >
+    kubectl create secret generic repo-git-platform
+    --namespace {{ argocd_namespace }}
+    --from-literal=type=git
+    --from-literal=url={{ git_platform_repo_url }}
+    --from-literal=username={{ ghcr_username }}
+    --from-literal=password={{ ghcr_token }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: repo_git_platform_secret
+  changed_when: repo_git_platform_secret.rc == 0
+  failed_when: repo_git_platform_secret.rc != 0 and 'already exists' not in repo_git_platform_secret.stderr
+  when: ghcr_username != "" and ghcr_token != ""
+
+- name: Label repo-git-platform secret for ArgoCD
+  command: >
+    kubectl label secret repo-git-platform
+    --namespace {{ argocd_namespace }}
+    argocd.argoproj.io/secret-type=repository
+    --overwrite
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+  when: ghcr_username != "" and ghcr_token != ""
+
+- name: Create ArgoCD Git Repository Secret for config-repo
+  command: >
+    kubectl create secret generic repo-config
+    --namespace {{ argocd_namespace }}
+    --from-literal=type=git
+    --from-literal=url={{ config_repo_url }}
+    --from-literal=username={{ ghcr_username }}
+    --from-literal=password={{ ghcr_token }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: repo_config_secret
+  changed_when: repo_config_secret.rc == 0
+  failed_when: repo_config_secret.rc != 0 and 'already exists' not in repo_config_secret.stderr
+  when: ghcr_username != "" and ghcr_token != ""
+
+- name: Label repo-config secret for ArgoCD
+  command: >
+    kubectl label secret repo-config
+    --namespace {{ argocd_namespace }}
+    argocd.argoproj.io/secret-type=repository
+    --overwrite
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+  when: ghcr_username != "" and ghcr_token != ""
+
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
 
 - name: Apply ArgoCD ApplicationSet
@@ -139,6 +193,14 @@
     KUBECONFIG: "{{ kubeconfig_user }}"
   register: appset_apply
   changed_when: "'configured' in appset_apply.stdout or 'created' in appset_apply.stdout"
+
+- name: Restart ArgoCD controllers to sync ApplicationSet
+  command: >
+    kubectl rollout restart deployment/argocd-applicationset-controller deployment/argocd-repo-server
+    -n {{ argocd_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
 
 - name: Show ApplicationSet status
   command: kubectl get applicationset -n {{ argocd_namespace }}
@@ -150,3 +212,15 @@
 - name: Display ApplicationSet status
   debug:
     var: appset_status.stdout_lines
+
+- name: Show generated ArgoCD Applications
+  command: kubectl get applications -n {{ argocd_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+  register: app_list
+
+- name: Display generated Applications
+  debug:
+    var: app_list.stdout_lines
+

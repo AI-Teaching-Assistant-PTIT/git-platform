@@ -21,6 +21,8 @@ cnpg_version: "v0.24.0"
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
 applicationset_file: "{{ playbook_dir }}/../argocd/applicationset.yaml"
+git_platform_repo_url: "https://github.com/AI-Teaching-Assistant-PTIT/git-platform.git"
+config_repo_url: "https://github.com/AI-Teaching-Assistant-PTIT/config-repo.git"
 
 # ── GHCR Secret ────────────────────────────────────────────────────────────────
 ghcr_username: "ngtukien"        # điền GHCR username
