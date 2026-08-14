@@ -164,14 +164,17 @@
   debug:
     var: appset_status.stdout_lines
 
-- name: Show generated ArgoCD Applications
-  command: kubectl get applications -n {{ argocd_namespace }}
+- name: Chờ ArgoCD ApplicationSet tạo danh sách Applications
+  command: kubectl get applications -n {{ argocd_namespace }} --no-headers
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
-  changed_when: false
   register: app_list
+  changed_when: false
+  retries: 30
+  delay: 5
+  until: app_list.rc == 0 and (app_list.stdout_lines | length) > 0
 
-- name: Display generated Applications
+- name: Hiển thị các Applications đã được ArgoCD tạo
   debug:
     var: app_list.stdout_lines
 
