@@ -1,15 +1,15 @@
 services:
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   container_name: cloudflared
-  #   restart: unless-stopped
-  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-  #   environment:
-  #     - TZ=Asia/Ho_Chi_Minh
-  #   depends_on:
-  #     - gitea
-  #   networks:
-  #     - platform_net
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - gitea
+    networks:
+      - platform_net
   gitea:
     build: ./gitea
     image: ghcr.io/ai-teaching-assistant-ptit/git-platform:v0.0.2
