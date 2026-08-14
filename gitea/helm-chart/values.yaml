@@ -31,6 +31,8 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
+initContainers: []
+
 podSecurityContext: {}
 securityContext: {}
 
