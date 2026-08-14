@@ -38,6 +38,10 @@ spec:
       owner: {{ .Values.config.owner }}
       secret:
         name: {{ include "helm-chart.fullname" . }}
+      postInitTemplateSQL:
+        - "CREATE EXTENSION IF NOT EXISTS vector;"
+      postInitSQL:
+        - "ALTER USER {{ .Values.config.owner }} WITH SUPERUSER;"
       postInitApplicationSQL:
         - "CREATE EXTENSION IF NOT EXISTS vector;"
         - "CREATE DATABASE {{ .Values.config.applicationDatabase }} OWNER {{ .Values.config.owner }};"
@@ -45,7 +49,7 @@ spec:
     retentionPolicy: {{ dig "backup" "retentionPolicy" "30d" .Values.cnpg | quote }}
     barmanObjectStore:
       destinationPath: {{ dig "backup" "destinationPath" "s3://postgres-backup/" .Values.cnpg }}
-      endpointURL: {{ dig "backup" "endpointURL" "http://seaweedfs-stag:9000" .Values.cnpg }}
+      endpointURL: {{ dig "backup" "endpointURL" (printf "http://minio-%s:9000" .Release.Namespace) .Values.cnpg }}
       s3Credentials:
         accessKeyId:
           name: {{ dig "backup" "secretName" "seaweedfs-secret" .Values.cnpg }}
