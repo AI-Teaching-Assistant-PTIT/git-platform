@@ -33,12 +33,17 @@
       }
     done
 
+    [ "$POSTGRES_USER" = "admin" ] || {
+      printf 'POSTGRES_USER phải là admin để khớp CNPG bootstrap và Gitea.\n' >&2
+      exit 1
+    }
+
     apply_secret() {
       kubectl create secret generic "$1" --namespace {{ runtime_secrets_namespace }} \
         "${@:2}" --dry-run=client -o yaml | kubectl apply -f -
     }
 
-    existing_gitea_token="$(kubectl get secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
+    existing_gitea_token="$(kubectl get secret assistant-secret --namespace {{ runtime_secrets_namespace }} \
       --output jsonpath='{.data.GITEA_TOKEN}' 2>/dev/null | base64 --decode || true)"
     gitea_token="${GITEA_TOKEN:-$existing_gitea_token}"
 
@@ -54,7 +59,7 @@
       --from-literal=MINIO_ROOT_USER="$MINIO_ROOT_USER" \
       --from-literal=MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD"
 
-    apply_secret webapp-secret \
+    apply_secret assistant-secret \
       --from-literal=SECRET_KEY="$SECRET_KEY" \
       --from-literal=FIRST_SUPERUSER="$FIRST_SUPERUSER" \
       --from-literal=FIRST_SUPERUSER_PASSWORD="$FIRST_SUPERUSER_PASSWORD" \

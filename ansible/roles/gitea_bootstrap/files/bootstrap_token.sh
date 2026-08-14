@@ -13,7 +13,7 @@ run_gitea() {
     "gitea --config /data/gitea/conf/app.ini --work-path /data/gitea --custom-path /data/gitea${escaped_args}"
 }
 
-token="$(kubectl get secret webapp-secret --namespace "$NAMESPACE" \
+token="$(kubectl get secret assistant-secret --namespace "$NAMESPACE" \
   --output jsonpath='{.data.GITEA_TOKEN}' 2>/dev/null | base64 --decode || true)"
 if [ -n "$token" ]; then
   printf 'unchanged\n'
@@ -22,7 +22,7 @@ fi
 
 if printf '%s\n' "$USER_LIST" | \
   awk -v username="$SERVICE_ACCOUNT" 'NR > 1 && $2 == username { found=1 } END { exit !found }'; then
-  printf 'GITEA_TOKEN chưa có trong webapp-secret nhưng service account đã tồn tại. Hãy chạy quy trình rotation tường minh.\n' >&2
+  printf 'GITEA_TOKEN chưa có trong assistant-secret nhưng service account đã tồn tại. Hãy chạy quy trình rotation tường minh.\n' >&2
   exit 1
 fi
 
@@ -49,7 +49,7 @@ token="$(run_gitea admin user generate-access-token \
 }
 
 patch_json="$(printf '{"data":{"GITEA_TOKEN":"%s"}}' "$(printf '%s' "$token" | base64 -w 0)")"
-kubectl patch secret webapp-secret --namespace "$NAMESPACE" \
+kubectl patch secret assistant-secret --namespace "$NAMESPACE" \
   --type=merge \
   --patch "$patch_json"
 printf 'created\n'

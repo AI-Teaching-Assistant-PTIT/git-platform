@@ -44,7 +44,7 @@ spec:
             periodSeconds: 10
           envFrom:
             - secretRef:
-                name: webapp-secret
+                name: assistant-secret
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}

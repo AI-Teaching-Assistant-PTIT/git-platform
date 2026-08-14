@@ -27,11 +27,7 @@ Hệ thống được đóng gói hoàn toàn bằng Docker Compose, giúp việ
 
 ## 🏗 Kiến trúc hệ thống (Docker Compose)
 
-Hệ thống bao gồm 4 khối (Containers) chạy song song:
-- **`postgres`**: Cơ sở dữ liệu quan hệ, nơi lưu trữ tài khoản người dùng, bình luận, cài đặt hệ thống và cấu hình SSO.
-- **`gitea`**: Ứng dụng lõi (Web UI & Git Server). Sử dụng Image tự build tại chỗ `ghcr.io/nguyentukien/platform-service:latest` để giữ lại các tùy biến giao diện.
-- **`gitea_runner`**: Máy chủ thực thi các Job CI/CD tự động. 
-- **`cloudflared`**: Daemon kết nối với Cloudflare để cấp phát tên miền `git.nits.io.vn` và mã hóa luồng dữ liệu.
+Hệ thống bao gồm các dịch vụ Gitea, PostgreSQL, MinIO và các dịch vụ xử lý liên quan. Cloudflare Tunnel được cấu hình riêng khi cần.
 
 ---
 
@@ -47,7 +43,7 @@ Sao chép file cấu hình mẫu và điền các thông số bảo mật của 
 cp .env.example .env
 ```
 Mở file `.env` và cấu hình ít nhất các thông số sau:
-- `DB_PASS`: Mật khẩu cho Database.
+- `POSTGRES_PASSWORD`: Mật khẩu cho Database.
 - `CLOUDFLARE_TUNNEL_TOKEN`: Token của Cloudflare Tunnel.
 
 ### Bước 3: Khởi chạy hệ thống
@@ -56,16 +52,6 @@ Chạy lệnh sau để Docker tự động Build Image giao diện mới nhất
 docker compose up --build -d
 ```
 Chờ khoảng 5-10 giây, bạn có thể truy cập vào tên miền của bạn để sử dụng GitPTIT.
-
-### Bước 4: Đăng ký Runner (Để chạy CI/CD)
-Để các Workflow (như file `.gitea/workflows/ci.yaml`) có thể hoạt động:
-1. Đăng nhập vào Gitea bằng tài khoản Admin.
-2. Vào **Site Administration** -> **Actions** -> **Runners** -> **Create new Runner**.
-3. Copy đoạn **Registration Token**.
-4. Mở file `.env` lên, dán token đó vào biến `GITEA_RUNNER_TOKEN`.
-5. Chạy lại lệnh `docker compose up -d gitea_runner`.
-
----
 
 ## 💾 Hướng dẫn Sao lưu (Backup) & Phục hồi (Restore)
 
@@ -93,7 +79,7 @@ Nếu server bị sập hoặc bạn muốn dời sang máy chủ mới, hãy l�
 docker compose up -d
 
 # 2. Chờ 10 giây, sau đó bơm lại dữ liệu vào Database
-cat postgres/backups/database_backup_*.sql | docker exec -i postgres psql -U gitea -d gitea
+cat postgres/backups/database_backup_*.sql | docker exec -i postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"
 
 # 3. Dừng Gitea tạm thời để tránh xung đột file
 docker stop gitea
