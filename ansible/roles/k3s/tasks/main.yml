@@ -19,13 +19,23 @@
 
 - name: ⚙️ Cài đặt và cập nhật k3s
   block:
-    - name: Tải k3s binary (tự động retry và resume nếu rớt mạng)
-      shell: |
-        curl -fL --retry 10 --retry-delay 3 -C - \
-          -o /usr/local/bin/k3s \
-          "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version | replace('+', '%2B') }}/k3s"
-        chmod +x /usr/local/bin/k3s
+    - name: Tải k3s binary (verify SHA256, tự động retry nếu rớt mạng)
+      # Dùng get_url: tải vào file tạm, so khớp SHA256 rồi mới đưa vào vị trí (atomic).
+      # checksum trỏ tới file sha256sum chính thức của đúng phiên bản; ansible tự khớp dòng "k3s".
+      # Nếu binary trên đĩa bị hỏng/thiếu byte -> checksum lệch -> tự tải lại (self-heal),
+      # thay vì cài đè một binary lỗi như cách curl -C - (resume) trước đây.
+      get_url:
+        url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version | replace('+', '%2B') }}/k3s"
+        dest: /usr/local/bin/k3s
+        checksum: "sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version | replace('+', '%2B') }}/sha256sum-amd64.txt"
+        mode: '0755'
+        owner: root
+        group: root
       become: true
+      register: k3s_download
+      retries: 10
+      delay: 3
+      until: k3s_download is succeeded
 
     - name: Chạy script cài đặt k3s (bỏ qua bước tải)
       shell: |

@@ -3,9 +3,6 @@ replicaCount: 1
 config:
   TZ: "Asia/Ho_Chi_Minh"
 
-secret:
-  TUNNEL_TOKEN: "<ENCRYPTED_TUNNEL_TOKEN>"
-
 args:
   - tunnel
   - --no-autoupdate

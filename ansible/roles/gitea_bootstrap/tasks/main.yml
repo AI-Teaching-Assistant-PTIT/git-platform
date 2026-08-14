@@ -1,0 +1,131 @@
+---
+# roles/gitea_bootstrap/tasks/main.yml
+# Khởi tạo service account và token Gitea sau khi Argo CD đồng bộ Gitea.
+
+- name: Chờ Gitea Deployment được Argo CD tạo
+  command: >
+    kubectl get deployment/{{ gitea_deployment_name }}
+    --namespace {{ runtime_secrets_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: gitea_deployment
+  changed_when: false
+  retries: 60
+  delay: 5
+  until: gitea_deployment.rc == 0
+
+- name: Chờ Gitea Deployment sẵn sàng
+  command: >
+    kubectl rollout status deployment/{{ gitea_deployment_name }}
+    --namespace {{ runtime_secrets_namespace }}
+    --timeout={{ gitea_bootstrap_timeout }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  changed_when: false
+
+- name: Lấy pod Gitea đang chạy
+  command: >
+    kubectl get pods --namespace {{ runtime_secrets_namespace }}
+    --selector app.kubernetes.io/name=gitea,app.kubernetes.io/instance=gitea-stag
+    --field-selector=status.phase=Running
+    --output jsonpath='{.items[0].metadata.name}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: gitea_pod
+  changed_when: false
+  failed_when: not gitea_pod.stdout
+
+- name: Tạo hoặc cập nhật Gitea integration token
+  shell: |
+    set -euo pipefail
+
+    run_gitea() {
+      kubectl exec --namespace {{ runtime_secrets_namespace }} {{ gitea_pod.stdout | quote }} -- \
+        env GITEA_WORK_DIR=/app/gitea gitea "$@"
+    }
+
+    token="$(kubectl get secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
+      --output jsonpath='{.data.GITEA_TOKEN}' 2>/dev/null | base64 --decode || true)"
+    if [ -n "$token" ]; then
+      printf 'unchanged\n'
+      exit 0
+    fi
+
+    service_account_exists=false
+    if run_gitea admin user list | awk -v username={{ gitea_service_account | quote }} 'NR > 1 && $2 == username { found=1 } END { exit !found }'; then
+      service_account_exists=true
+    fi
+
+    if [ "$service_account_exists" = true ]; then
+      printf 'GITEA_TOKEN chưa có trong webapp-secret nhưng service account đã tồn tại. Hãy chạy quy trình rotation tường minh.\n' >&2
+      exit 1
+    fi
+
+    password="$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 48)"
+    run_gitea admin user create \
+      --username {{ gitea_service_account | quote }} \
+      --password "$password" \
+      --email {{ gitea_service_account_email | quote }} \
+      --must-change-password=false
+
+    token="$(run_gitea admin user generate-access-token \
+      --username {{ gitea_service_account | quote }} \
+      --token-name {{ gitea_token_name | quote }} \
+      --scopes {{ gitea_token_scopes | quote }} \
+      --raw)"
+    [ -n "$token" ] || {
+      printf 'Gitea không trả về access token sau khi tạo.\n' >&2
+      exit 1
+    }
+
+    kubectl patch secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
+      --type=merge \
+      --patch "$(printf '{\"data\":{\"GITEA_TOKEN\":\"%s\"}}' "$(printf %s "$token" | base64 -w 0)")"
+    printf 'created\n'
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: gitea_token_bootstrap
+  changed_when: gitea_token_bootstrap.stdout | trim == 'created'
+  no_log: true
+
+- name: Chờ workloads tiêu thụ token được Argo CD tạo
+  command: >
+    kubectl get deployment/{{ item }}
+    --namespace {{ runtime_secrets_namespace }}
+  loop:
+    - backend-stag
+    - code-index-worker-stag
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: gitea_token_consumers
+  changed_when: false
+  retries: 60
+  delay: 5
+  until: gitea_token_consumers.rc == 0
+
+- name: Restart workloads sử dụng Gitea token
+  command: >
+    kubectl rollout restart deployment/{{ item }}
+    --namespace {{ runtime_secrets_namespace }}
+  loop:
+    - backend-stag
+    - code-index-worker-stag
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  when: gitea_token_bootstrap.changed
+  changed_when: true
+
+- name: Chờ workloads sử dụng Gitea token hoàn tất rollout
+  command: >
+    kubectl rollout status deployment/{{ item }}
+    --namespace {{ runtime_secrets_namespace }}
+    --timeout={{ gitea_bootstrap_timeout }}
+  loop:
+    - backend-stag
+    - code-index-worker-stag
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  when: gitea_token_bootstrap.changed
+  changed_when: false

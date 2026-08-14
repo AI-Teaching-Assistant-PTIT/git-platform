@@ -1,0 +1,85 @@
+---
+# roles/runtime_secrets/tasks/main.yml
+# Tạo Kubernetes Secret từ platform/.env. File .env không được commit.
+
+- name: Kiểm tra file môi trường cục bộ
+  stat:
+    path: "{{ secrets_env_file }}"
+  register: secrets_env_file_stat
+
+- name: Báo lỗi khi thiếu file môi trường
+  assert:
+    that: secrets_env_file_stat.stat.exists
+    fail_msg: "Không tìm thấy file secret {{ secrets_env_file }}. Hãy tạo/cập nhật platform/.env trước khi chạy playbook."
+
+- name: Tạo hoặc cập nhật runtime Secrets từ file môi trường
+  shell: |
+    set -euo pipefail
+    set -a
+    . {{ secrets_env_file | quote }}
+    set +a
+
+    required_variables=(
+      POSTGRES_USER POSTGRES_PASSWORD
+      MINIO_ROOT_USER MINIO_ROOT_PASSWORD MINIO_ACCESS_KEY MINIO_SECRET_KEY
+      SECRET_KEY FIRST_SUPERUSER FIRST_SUPERUSER_PASSWORD
+      CLOUDFLARE_TUNNEL_TOKEN
+      GHCR_USERNAME GHCR_TOKEN GHCR_EMAIL
+    )
+    for variable in "${required_variables[@]}"; do
+      [ -n "${!variable:-}" ] || {
+        printf 'Thiếu biến secret bắt buộc: %s\n' "$variable" >&2
+        exit 1
+      }
+    done
+
+    apply_secret() {
+      kubectl create secret generic "$1" --namespace {{ runtime_secrets_namespace }} \
+        "${@:2}" --dry-run=client -o yaml | kubectl apply -f -
+    }
+
+    existing_gitea_token="$(kubectl get secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
+      --output jsonpath='{.data.GITEA_TOKEN}' 2>/dev/null | base64 --decode || true)"
+    gitea_token="${GITEA_TOKEN:-$existing_gitea_token}"
+
+    apply_secret postgres-stag \
+      --from-literal=username="$POSTGRES_USER" \
+      --from-literal=password="$POSTGRES_PASSWORD"
+
+    apply_secret gitea-stag \
+      --from-literal=GITEA__database__USER="$POSTGRES_USER" \
+      --from-literal=GITEA__database__PASSWD="$POSTGRES_PASSWORD"
+
+    apply_secret minio-secret \
+      --from-literal=MINIO_ROOT_USER="$MINIO_ROOT_USER" \
+      --from-literal=MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD"
+
+    apply_secret webapp-secret \
+      --from-literal=SECRET_KEY="$SECRET_KEY" \
+      --from-literal=FIRST_SUPERUSER="$FIRST_SUPERUSER" \
+      --from-literal=FIRST_SUPERUSER_PASSWORD="$FIRST_SUPERUSER_PASSWORD" \
+      --from-literal=POSTGRES_USER="$POSTGRES_USER" \
+      --from-literal=POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+      --from-literal=MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" \
+      --from-literal=MINIO_SECRET_KEY="$MINIO_SECRET_KEY" \
+      --from-literal=NVIDIA_API_KEY="${NVIDIA_API_KEY:-}" \
+      --from-literal=DOCLING_API_KEY="${DOCLING_API_KEY:-}" \
+      --from-literal=EMBEDDING_API_KEY="${EMBEDDING_API_KEY:-}" \
+      --from-literal=GITEA_TOKEN="$gitea_token" \
+      --from-literal=SMTP_PASSWORD="${SMTP_PASSWORD:-}"
+
+    apply_secret cloudflare-stag \
+      --from-literal=TUNNEL_TOKEN="$CLOUDFLARE_TUNNEL_TOKEN"
+
+    kubectl create secret docker-registry ghcr-secret \
+      --namespace {{ runtime_secrets_namespace }} \
+      --docker-server=ghcr.io \
+      --docker-username="$GHCR_USERNAME" \
+      --docker-password="$GHCR_TOKEN" \
+      --docker-email="$GHCR_EMAIL" \
+      --dry-run=client -o yaml | kubectl apply -f -
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  no_log: true

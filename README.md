@@ -31,7 +31,7 @@ Hệ thống bao gồm 4 khối (Containers) chạy song song:
 - **`postgres`**: Cơ sở dữ liệu quan hệ, nơi lưu trữ tài khoản người dùng, bình luận, cài đặt hệ thống và cấu hình SSO.
 - **`gitea`**: Ứng dụng lõi (Web UI & Git Server). Sử dụng Image tự build tại chỗ `ghcr.io/nguyentukien/platform-service:latest` để giữ lại các tùy biến giao diện.
 - **`gitea_runner`**: Máy chủ thực thi các Job CI/CD tự động. 
-- **`cloudflared`**: Daemon kết nối với Cloudflare để cấp phát tên miền `git.ngtukien.id.vn` và mã hóa luồng dữ liệu.
+- **`cloudflared`**: Daemon kết nối với Cloudflare để cấp phát tên miền `git.nits.io.vn` và mã hóa luồng dữ liệu.
 
 ---
 

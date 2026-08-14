@@ -28,6 +28,5 @@ env:
   POSTGRES_DB: ""
   # Gitea
   GITEA_BASE_URL: ""
-  GITEA_TOKEN: ""
   GITEA_ORG: ""
   GITEA_TIMEOUT_SECONDS: "20"

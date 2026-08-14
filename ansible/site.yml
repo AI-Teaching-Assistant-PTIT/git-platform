@@ -13,6 +13,7 @@
       when: force_reinstall | default(false) | bool
     - role: k3s             # cài k3s (skip nếu đúng version)
     - role: helm            # cài / verify Helm
-    - role: kubeseal        # Sealed Secrets controller + CLI
+    - role: runtime_secrets # tạo Kubernetes Secrets từ ../.env
     - role: cnpg            # CloudNative PG operator
     - role: argocd          # ArgoCD + set password + ApplicationSet
+    - role: gitea_bootstrap # tạo service account/token sau khi Gitea sẵn sàng

@@ -101,7 +101,3 @@ config:
   GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION: "true"
   GITEA__oauth2_client__USERNAME: "preferred_username"
   GITEA__service__VALID_USERNAME_CHARS: 'a-zA-Z0-9_-.'
-
-secret:
-  GITEA__database__USER: "<ENCRYPTED_DB_USER>"
-  GITEA__database__PASSWD: "<ENCRYPTED_DB_PASSWORD>"

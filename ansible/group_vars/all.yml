@@ -3,6 +3,8 @@ k3s_version: "v1.36.3+k3s1"
 k3s_install_args: ""   # giữ defaults: Traefik, servicelb, local-path đều enabled
 
 kubeconfig: /etc/rancher/k3s/k3s.yaml
+runtime_secrets_namespace: default
+secrets_env_file: "{{ playbook_dir }}/../.env"
 
 # ── Helm ────────────────────────────────────────────────────────────────────────
 helm_version: "v3.17.3"
@@ -12,19 +14,16 @@ argocd_namespace: argocd
 argocd_version: "v2.14.3"
 argocd_admin_password: "nits@2026"
 
-# ── Kubeseal / Sealed Secrets ───────────────────────────────────────────────────
-kubeseal_version: "v0.30.0"
-sealed_secrets_namespace: kube-system
-
-# ── CNPG (CloudNative PG) ───────────────────────────────────────────────────────
+# ── Gitea bootstrap ──────────────────────────────────────────────────────────────
+gitea_deployment_name: gitea-stag
+gitea_bootstrap_timeout: 300s
+gitea_service_account: nits-integration
+gitea_service_account_email: nits-integration@localhost
+gitea_token_name: nits-runtime
+gitea_token_scopes: read:repository,write:repository,read:organization,write:organization
 cnpg_version: "v0.24.0"
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
 applicationset_file: "{{ playbook_dir }}/../argocd/applicationset.yaml"
 git_platform_repo_url: "https://github.com/AI-Teaching-Assistant-PTIT/git-platform.git"
 config_repo_url: "https://github.com/AI-Teaching-Assistant-PTIT/config-repo.git"
-
-# ── GHCR Secret ────────────────────────────────────────────────────────────────
-ghcr_username: "ngtukien"        # điền GHCR username
-ghcr_token: "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"           # điền GHCR PAT
-ghcr_email: "ngtukien218.study@gmail.com"           # email GitHub

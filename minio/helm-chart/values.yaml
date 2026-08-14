@@ -30,10 +30,6 @@ buckets:
 
 imagePullSecrets: []
 
-secret:
-  MINIO_ROOT_USER: "<ENCRYPTED_MINIO_ROOT_USER>"
-  MINIO_ROOT_PASSWORD: "<ENCRYPTED_MINIO_ROOT_PASSWORD>"
-
 config:
   TZ: "Asia/Ho_Chi_Minh"
   MINIO_VOLUMES: "/data"

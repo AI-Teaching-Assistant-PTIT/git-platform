@@ -114,76 +114,38 @@
       - "Username  : admin"
       - "Password  : {{ argocd_admin_password }}"
 
-# ── GHCR imagePullSecret ────────────────────────────────────────────────────────
-
-- name: Create GHCR imagePullSecret in default namespace
-  command: >
-    kubectl create secret docker-registry ghcr-secret
-    --docker-server=ghcr.io
-    --docker-username={{ ghcr_username }}
-    --docker-password={{ ghcr_token }}
-    --docker-email={{ ghcr_email }}
-    --namespace default
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  register: ghcr_secret
-  changed_when: ghcr_secret.rc == 0
-  failed_when: ghcr_secret.rc != 0 and 'already exists' not in ghcr_secret.stderr
-  when: ghcr_username != "" and ghcr_token != ""
-
 # ── ArgoCD Repository Credentials ──────────────────────────────────────────────
 
-- name: Create ArgoCD Git Repository Secret for git-platform
-  command: >
-    kubectl create secret generic repo-git-platform
-    --namespace {{ argocd_namespace }}
-    --from-literal=type=git
-    --from-literal=url={{ git_platform_repo_url }}
-    --from-literal=username={{ ghcr_username }}
-    --from-literal=password={{ ghcr_token }}
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  register: repo_git_platform_secret
-  changed_when: repo_git_platform_secret.rc == 0
-  failed_when: repo_git_platform_secret.rc != 0 and 'already exists' not in repo_git_platform_secret.stderr
-  when: ghcr_username != "" and ghcr_token != ""
+- name: Tạo hoặc cập nhật credential repositories cho ArgoCD
+  shell: |
+    set -euo pipefail
+    set -a
+    . {{ secrets_env_file | quote }}
+    set +a
 
-- name: Label repo-git-platform secret for ArgoCD
-  command: >
-    kubectl label secret repo-git-platform
-    --namespace {{ argocd_namespace }}
-    argocd.argoproj.io/secret-type=repository
-    --overwrite
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  changed_when: false
-  when: ghcr_username != "" and ghcr_token != ""
+    for secret_name in repo-git-platform repo-config; do
+      case "$secret_name" in
+        repo-git-platform) repo_url={{ git_platform_repo_url | quote }} ;;
+        repo-config) repo_url={{ config_repo_url | quote }} ;;
+      esac
 
-- name: Create ArgoCD Git Repository Secret for config-repo
-  command: >
-    kubectl create secret generic repo-config
-    --namespace {{ argocd_namespace }}
-    --from-literal=type=git
-    --from-literal=url={{ config_repo_url }}
-    --from-literal=username={{ ghcr_username }}
-    --from-literal=password={{ ghcr_token }}
+      kubectl create secret generic "$secret_name" \
+        --namespace {{ argocd_namespace }} \
+        --from-literal=type=git \
+        --from-literal=url="$repo_url" \
+        --from-literal=username="$GHCR_USERNAME" \
+        --from-literal=password="$GHCR_TOKEN" \
+        --dry-run=client -o yaml | kubectl apply -f -
+      kubectl label secret "$secret_name" \
+        --namespace {{ argocd_namespace }} \
+        argocd.argoproj.io/secret-type=repository \
+        --overwrite
+    done
+  args:
+    executable: /bin/bash
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
-  register: repo_config_secret
-  changed_when: repo_config_secret.rc == 0
-  failed_when: repo_config_secret.rc != 0 and 'already exists' not in repo_config_secret.stderr
-  when: ghcr_username != "" and ghcr_token != ""
-
-- name: Label repo-config secret for ArgoCD
-  command: >
-    kubectl label secret repo-config
-    --namespace {{ argocd_namespace }}
-    argocd.argoproj.io/secret-type=repository
-    --overwrite
-  environment:
-    KUBECONFIG: "{{ kubeconfig_user }}"
-  changed_when: false
-  when: ghcr_username != "" and ghcr_token != ""
+  no_log: true
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
 
