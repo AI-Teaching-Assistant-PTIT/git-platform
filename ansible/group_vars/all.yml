@@ -16,7 +16,7 @@ argocd_admin_password: "nits@2026"
 
 # ── Gitea bootstrap ──────────────────────────────────────────────────────────────
 gitea_deployment_name: gitea-stag
-gitea_bootstrap_timeout: 300s
+gitea_bootstrap_timeout: 600s
 gitea_service_account: nits-integration
 gitea_service_account_email: nits-integration@localhost
 gitea_token_name: nits-runtime

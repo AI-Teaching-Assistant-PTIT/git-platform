@@ -35,60 +35,74 @@
   changed_when: false
   failed_when: not gitea_pod.stdout
 
-- name: Tạo hoặc cập nhật Gitea integration token
-  shell: |
-    set -euo pipefail
-
-    run_gitea() {
-      kubectl exec --namespace {{ runtime_secrets_namespace }} {{ gitea_pod.stdout | quote }} -- \
-        env GITEA_WORK_DIR=/app/gitea gitea "$@"
-    }
-
-    token="$(kubectl get secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
-      --output jsonpath='{.data.GITEA_TOKEN}' 2>/dev/null | base64 --decode || true)"
-    if [ -n "$token" ]; then
-      printf 'unchanged\n'
-      exit 0
-    fi
-
-    service_account_exists=false
-    if run_gitea admin user list | awk -v username={{ gitea_service_account | quote }} 'NR > 1 && $2 == username { found=1 } END { exit !found }'; then
-      service_account_exists=true
-    fi
-
-    if [ "$service_account_exists" = true ]; then
-      printf 'GITEA_TOKEN chưa có trong webapp-secret nhưng service account đã tồn tại. Hãy chạy quy trình rotation tường minh.\n' >&2
-      exit 1
-    fi
-
-    password="$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 48)"
-    run_gitea admin user create \
-      --username {{ gitea_service_account | quote }} \
-      --password "$password" \
-      --email {{ gitea_service_account_email | quote }} \
-      --must-change-password=false
-
-    token="$(run_gitea admin user generate-access-token \
-      --username {{ gitea_service_account | quote }} \
-      --token-name {{ gitea_token_name | quote }} \
-      --scopes {{ gitea_token_scopes | quote }} \
-      --raw)"
-    [ -n "$token" ] || {
-      printf 'Gitea không trả về access token sau khi tạo.\n' >&2
-      exit 1
-    }
-
-    kubectl patch secret webapp-secret --namespace {{ runtime_secrets_namespace }} \
-      --type=merge \
-      --patch "$(printf '{\"data\":{\"GITEA_TOKEN\":\"%s\"}}' "$(printf %s "$token" | base64 -w 0)")"
-    printf 'created\n'
-  args:
-    executable: /bin/bash
+- name: Xác minh Gitea CLI bằng user git
+  command:
+    argv:
+      - kubectl
+      - exec
+      - --namespace
+      - "{{ runtime_secrets_namespace }}"
+      - "{{ gitea_pod.stdout }}"
+      - --
+      - /bin/su
+      - -s
+      - /bin/sh
+      - git
+      - -c
+      - >-
+        gitea --config /data/gitea/conf/app.ini --work-path /data/gitea
+        --custom-path /data/gitea --version
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
-  register: gitea_token_bootstrap
-  changed_when: gitea_token_bootstrap.stdout | trim == 'created'
+  changed_when: false
+
+- name: Kiểm tra service account Gitea đã tồn tại
+  command:
+    argv:
+      - kubectl
+      - exec
+      - --namespace
+      - "{{ runtime_secrets_namespace }}"
+      - "{{ gitea_pod.stdout }}"
+      - --
+      - /bin/su
+      - -s
+      - /bin/sh
+      - git
+      - -c
+      - >-
+        gitea --config /data/gitea/conf/app.ini --work-path /data/gitea
+        --custom-path /data/gitea admin user list
+  environment:
+    KUBECONFIG: "{{ kubeconfig_user }}"
+  register: gitea_user_list
+  changed_when: false
   no_log: true
+
+- name: Tạo hoặc cập nhật Gitea integration token
+  block:
+    - name: Tạo hoặc cập nhật token Gitea
+      script: bootstrap_token.sh
+      args:
+        executable: /bin/bash
+      environment:
+        KUBECONFIG: "{{ kubeconfig_user }}"
+        NAMESPACE: "{{ runtime_secrets_namespace }}"
+        GITEA_POD: "{{ gitea_pod.stdout }}"
+        USER_LIST: "{{ gitea_user_list.stdout }}"
+        SERVICE_ACCOUNT: "{{ gitea_service_account }}"
+        SERVICE_ACCOUNT_EMAIL: "{{ gitea_service_account_email }}"
+        TOKEN_NAME: "{{ gitea_token_name }}"
+        TOKEN_SCOPES: "{{ gitea_token_scopes }}"
+      register: gitea_token_bootstrap
+      changed_when: gitea_token_bootstrap.stdout | trim == 'created'
+      no_log: true
+  rescue:
+    - name: Báo lỗi khởi tạo token Gitea đã che dữ liệu nhạy cảm
+      fail:
+        msg: >-
+          Không thể khởi tạo Gitea integration token. Kiểm tra Gitea đã cài đặt hoàn tất,
+          user git có thể đọc /data/gitea/conf/app.ini và service account chưa tồn tại khi token còn trống.
 
 - name: Chờ workloads tiêu thụ token được Argo CD tạo
   command: >

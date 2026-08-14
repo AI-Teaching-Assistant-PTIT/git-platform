@@ -22,18 +22,26 @@
 - name: Wait for ArgoCD server to be ready
   command: >
     kubectl rollout status deployment/argocd-server
-    -n {{ argocd_namespace }} --timeout=180s
+    -n {{ argocd_namespace }} --timeout=30s
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   changed_when: false
+  register: argocd_server_ready
+  retries: 30
+  delay: 30
+  until: argocd_server_ready.rc == 0
 
 - name: Wait for ArgoCD application-controller to be ready
   command: >
     kubectl rollout status statefulset/argocd-application-controller
-    -n {{ argocd_namespace }} --timeout=180s
+    -n {{ argocd_namespace }} --timeout=30s
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   changed_when: false
+  register: argocd_ctrl_ready
+  retries: 30
+  delay: 30
+  until: argocd_ctrl_ready.rc == 0
 
 # ── ArgoCD CLI ──────────────────────────────────────────────────────────────────
 
@@ -117,34 +125,15 @@
 # ── ArgoCD Repository Credentials ──────────────────────────────────────────────
 
 - name: Tạo hoặc cập nhật credential repositories cho ArgoCD
-  shell: |
-    set -euo pipefail
-    set -a
-    . {{ secrets_env_file | quote }}
-    set +a
-
-    for secret_name in repo-git-platform repo-config; do
-      case "$secret_name" in
-        repo-git-platform) repo_url={{ git_platform_repo_url | quote }} ;;
-        repo-config) repo_url={{ config_repo_url | quote }} ;;
-      esac
-
-      kubectl create secret generic "$secret_name" \
-        --namespace {{ argocd_namespace }} \
-        --from-literal=type=git \
-        --from-literal=url="$repo_url" \
-        --from-literal=username="$GHCR_USERNAME" \
-        --from-literal=password="$GHCR_TOKEN" \
-        --dry-run=client -o yaml | kubectl apply -f -
-      kubectl label secret "$secret_name" \
-        --namespace {{ argocd_namespace }} \
-        argocd.argoproj.io/secret-type=repository \
-        --overwrite
-    done
+  script: bootstrap_argocd_repos.sh
   args:
     executable: /bin/bash
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
+    SECRETS_ENV_FILE: "{{ secrets_env_file }}"
+    GIT_PLATFORM_REPO_URL: "{{ git_platform_repo_url }}"
+    CONFIG_REPO_URL: "{{ config_repo_url }}"
+    ARGOCD_NAMESPACE: "{{ argocd_namespace }}"
   no_log: true
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
