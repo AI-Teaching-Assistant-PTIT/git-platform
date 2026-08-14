@@ -104,42 +104,38 @@
           Không thể khởi tạo Gitea integration token. Kiểm tra Gitea đã cài đặt hoàn tất,
           user git có thể đọc /data/gitea/conf/app.ini và service account chưa tồn tại khi token còn trống.
 
-- name: Chờ workloads tiêu thụ token được Argo CD tạo
+- name: Kiểm tra workloads tiêu thụ token đã được Argo CD tạo
   command: >
     kubectl get deployment/{{ item }}
     --namespace {{ runtime_secrets_namespace }}
-  loop:
-    - backend-demo
-    - code-index-worker-demo
+  loop: "{{ gitea_token_consumer_deployments }}"
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   register: gitea_token_consumers
   changed_when: false
-  retries: 60
-  delay: 5
-  until: gitea_token_consumers.rc == 0
+  failed_when: false
 
-- name: Restart workloads sử dụng Gitea token
+- name: Restart workloads đã tồn tại để nhận Gitea token mới
   command: >
-    kubectl rollout restart deployment/{{ item }}
+    kubectl rollout restart deployment/{{ item.item }}
     --namespace {{ runtime_secrets_namespace }}
-  loop:
-    - backend-demo
-    - code-index-worker-demo
+  loop: "{{ gitea_token_consumers.results }}"
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
-  when: gitea_token_bootstrap.changed
+  when:
+    - gitea_token_bootstrap.changed
+    - item.rc == 0
   changed_when: true
 
-- name: Chờ workloads sử dụng Gitea token hoàn tất rollout
+- name: Chờ workloads đã restart nhận Gitea token hoàn tất rollout
   command: >
-    kubectl rollout status deployment/{{ item }}
+    kubectl rollout status deployment/{{ item.item }}
     --namespace {{ runtime_secrets_namespace }}
     --timeout={{ gitea_bootstrap_timeout }}
-  loop:
-    - backend-demo
-    - code-index-worker-demo
+  loop: "{{ gitea_token_consumers.results }}"
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
-  when: gitea_token_bootstrap.changed
+  when:
+    - gitea_token_bootstrap.changed
+    - item.rc == 0
   changed_when: false

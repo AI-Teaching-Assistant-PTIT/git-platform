@@ -21,6 +21,10 @@ gitea_service_account: nits-integration
 gitea_service_account_email: nits-integration@localhost
 gitea_token_name: nits-runtime
 gitea_token_scopes: read:repository,write:repository,read:organization,write:organization
+# Không chặn bootstrap nếu Argo CD vẫn đang đồng bộ một workload phụ.
+gitea_token_consumer_deployments:
+  - backend-{{ runtime_secrets_namespace }}
+  - code-index-worker-{{ runtime_secrets_namespace }}
 cnpg_version: "v0.24.0"
 
 # ── ArgoCD ApplicationSet ───────────────────────────────────────────────────────
