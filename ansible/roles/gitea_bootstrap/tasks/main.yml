@@ -26,7 +26,7 @@
 - name: Lấy pod Gitea đang chạy
   command: >
     kubectl get pods --namespace {{ runtime_secrets_namespace }}
-    --selector app.kubernetes.io/name=gitea,app.kubernetes.io/instance=gitea-stag
+    --selector app.kubernetes.io/name=gitea,app.kubernetes.io/instance=gitea-demo
     --field-selector=status.phase=Running
     --output jsonpath='{.items[0].metadata.name}'
   environment:
@@ -109,8 +109,8 @@
     kubectl get deployment/{{ item }}
     --namespace {{ runtime_secrets_namespace }}
   loop:
-    - backend-stag
-    - code-index-worker-stag
+    - backend-demo
+    - code-index-worker-demo
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   register: gitea_token_consumers
@@ -124,8 +124,8 @@
     kubectl rollout restart deployment/{{ item }}
     --namespace {{ runtime_secrets_namespace }}
   loop:
-    - backend-stag
-    - code-index-worker-stag
+    - backend-demo
+    - code-index-worker-demo
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   when: gitea_token_bootstrap.changed
@@ -137,8 +137,8 @@
     --namespace {{ runtime_secrets_namespace }}
     --timeout={{ gitea_bootstrap_timeout }}
   loop:
-    - backend-stag
-    - code-index-worker-stag
+    - backend-demo
+    - code-index-worker-demo
   environment:
     KUBECONFIG: "{{ kubeconfig_user }}"
   when: gitea_token_bootstrap.changed

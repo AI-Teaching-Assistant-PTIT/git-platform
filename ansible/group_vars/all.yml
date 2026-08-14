@@ -3,7 +3,7 @@ k3s_version: "v1.36.3+k3s1"
 k3s_install_args: ""   # giữ defaults: Traefik, servicelb, local-path đều enabled
 
 kubeconfig: /etc/rancher/k3s/k3s.yaml
-runtime_secrets_namespace: default
+runtime_secrets_namespace: demo
 secrets_env_file: "{{ playbook_dir }}/../.env"
 
 # ── Helm ────────────────────────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ argocd_version: "v2.14.3"
 argocd_admin_password: "nits@2026"
 
 # ── Gitea bootstrap ──────────────────────────────────────────────────────────────
-gitea_deployment_name: gitea-stag
+gitea_deployment_name: gitea-demo
 gitea_bootstrap_timeout: 600s
 gitea_service_account: nits-integration
 gitea_service_account_email: nits-integration@localhost

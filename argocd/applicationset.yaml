@@ -14,7 +14,7 @@ spec:
                 - path: '*/helm-chart'
           - list:
               elements:
-                - env: stag
+                - env: demo
                 # - env: prod
   template:
     metadata:
@@ -33,7 +33,7 @@ spec:
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: default
+        namespace: '{{env}}'
       syncPolicy:
         automated:
           prune: true
