@@ -40,7 +40,7 @@ spec:
         name: {{ include "helm-chart.fullname" . }}
       postInitApplicationSQL:
         - "CREATE EXTENSION IF NOT EXISTS vector;"
-        - "CREATE DATABASE webapp OWNER gitea;"
+        - "CREATE DATABASE {{ .Values.config.applicationDatabase }} OWNER {{ .Values.config.owner }};"
   backup:
     retentionPolicy: {{ dig "backup" "retentionPolicy" "30d" .Values.cnpg | quote }}
     barmanObjectStore:

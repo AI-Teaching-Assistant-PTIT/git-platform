@@ -57,6 +57,7 @@ tolerations: []
 affinity: {}
 
 config:
-  owner: "gitea"
-  database: "gitea"
+  owner: "admin"
+  database: "gitptit"
+  applicationDatabase: "assistant"
   TZ: "Asia/Ho_Chi_Minh"

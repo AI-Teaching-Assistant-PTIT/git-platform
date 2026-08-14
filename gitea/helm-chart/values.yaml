@@ -86,7 +86,7 @@ config:
   GITEA__server__LFS_START_SERVER: "true"
   GITEA__database__DB_TYPE: "postgres"
   GITEA__database__HOST: "postgres-rw:5432"
-  GITEA__database__NAME: "gitea"
+  GITEA__database__NAME: "gitptit"
   USER_UID: "1000"
   USER_GID: "1000"
   GITEA__server__DOMAIN: "git.example.com"
