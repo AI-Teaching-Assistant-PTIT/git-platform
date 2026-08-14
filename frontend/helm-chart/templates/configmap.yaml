@@ -7,7 +7,7 @@ metadata:
 data:
   api-proxy.conf: |
     location /api/ {
-        proxy_pass http://backend-stag:8000/api/;
+        proxy_pass http://{{ .Values.backendHost | default (printf "backend-%s" .Release.Namespace) }}:8000/api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -15,14 +15,14 @@ data:
         proxy_cookie_path / "/; SameSite=Lax";
     }
     location /docs {
-        proxy_pass http://backend-stag:8000/docs;
+        proxy_pass http://{{ .Values.backendHost | default (printf "backend-%s" .Release.Namespace) }}:8000/docs;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
     location /openapi.json {
-        proxy_pass http://backend-stag:8000/openapi.json;
+        proxy_pass http://{{ .Values.backendHost | default (printf "backend-%s" .Release.Namespace) }}:8000/openapi.json;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
