@@ -12,7 +12,7 @@ services:
       - platform_net
   gitea:
     build: ./gitea
-    image: ghcr.io/ai-teaching-assistant-ptit/git-platform:v0.0.2
+    image: ghcr.io/ai-teaching-assistant-ptit/gitptit:latest
     container_name: gitea
     restart: unless-stopped
     depends_on:
@@ -116,7 +116,7 @@ services:
       - platform_net
 
   prestart:
-    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: "no"
     networks:
       - platform_net
@@ -142,7 +142,7 @@ services:
       - .env
 
   backend:
-    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: always
     networks:
       - platform_net
@@ -169,13 +169,16 @@ services:
       - MINIO_ACCESS_KEY
       - MINIO_SECRET_KEY
       - MINIO_BUCKET=course-knowledge
+      - GITEA_BASE_URL
+      - GITEA_TOKEN
+      - GITEA_ORG
     env_file:
       - .env
     ports:
       - "8000:8000"
 
   knowledge-worker:
-    image: ghcr.io/ai-teaching-assistant-ptit/backend:pr-6
+    image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: always
     command: python -m app.knowledge.worker
     networks:
@@ -203,7 +206,7 @@ services:
       - .env
 
   frontend:
-    image: ghcr.io/ai-teaching-assistant-ptit/frontend:pr-7
+    image: ghcr.io/ai-teaching-assistant-ptit/frontend:latest
     restart: always
     networks:
       - platform_net

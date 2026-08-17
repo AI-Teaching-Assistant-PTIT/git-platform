@@ -14,7 +14,7 @@ persistence:
   size: 5Gi
 
 image:
-  repository: ghcr.io/nguyentukien/nits-platform
+  repository: ghcr.io/ai-teaching-assistant-ptit/gitptit
   pullPolicy: IfNotPresent
   tag: ""
 
