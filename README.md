@@ -27,7 +27,20 @@ Hệ thống được đóng gói hoàn toàn bằng Docker Compose, giúp việ
 
 ## 🏗 Kiến trúc hệ thống (Docker Compose)
 
-Hệ thống bao gồm các dịch vụ Gitea, PostgreSQL, MinIO và các dịch vụ xử lý liên quan. Cloudflare Tunnel được cấu hình riêng khi cần.
+| Service | Image | Vai trò |
+|---------|-------|---------|
+| `gitptit` | build từ [gitptit/Dockerfile](gitptit/Dockerfile) | Gitea đã tùy biến giao diện + bootstrap SSO. Cổng `3000` (web), `2222` (SSH) |
+| `postgres` | `pgvector/pgvector:pg15` | Chứa cả database của GitPTIT (`POSTGRES_DB`) và của webapp (`WEBAPP_DB`) |
+| `minio` | `minio/minio` | Object storage cho tài liệu khoá học. Cổng `9000` (S3 API), `9001` (console) |
+| `docling` | `docling-serve-cpu` | Chuyển tài liệu (PDF, DOCX…) sang text cho pipeline knowledge |
+| `prestart` | `backend:latest` | Chạy migration + seed dữ liệu ban đầu rồi thoát (`restart: "no"`) |
+| `backend` | `backend:latest` | API của webapp. Cổng `8000` |
+| `knowledge-worker` | `backend:latest` | Worker nền xử lý tài liệu đã upload |
+| `frontend` | `frontend:latest` | Web UI. Cổng `80` |
+| `cloudflared` | `cloudflare/cloudflared` | Cloudflare Tunnel, chỉ chạy khi có `CLOUDFLARE_TUNNEL_TOKEN` |
+
+Tất cả nằm trên network `platform_net`. Dữ liệu lâu dài ở 4 volume: `gitptit_data`,
+`postgres_data`, `minio_data`, `app-docling-cache`.
 
 ---
 
@@ -106,40 +119,46 @@ Nếu đổi `SSO_AUTH_NAME` thì phải sửa lại redirect URI trên Entra ID
 
 ## 💾 Hướng dẫn Sao lưu (Backup) & Phục hồi (Restore)
 
-Hệ thống được thiết kế để dễ dàng chuyển nhà. Dữ liệu quý giá nhất nằm ở 2 Docker Volumes: `postgres_data` và `gitea_data`.
+Hệ thống được thiết kế để dễ dàng chuyển nhà. Dữ liệu quý giá nhất nằm ở 2 Docker Volumes: `postgres_data` và `gitptit_data`.
+
+> Docker thêm tiền tố tên project vào volume. Project mặc định lấy theo tên thư mục
+> chứa `docker-compose.yaml` (ở đây là `platform`), nên volume thật là
+> `platform_gitptit_data`. Chạy `docker volume ls` để xác nhận trước khi backup.
 
 ### 1. Cách Sao lưu (Backup)
 Tạo thư mục chứa bản sao lưu:
 ```bash
 mkdir -p postgres/backups gitptit/backups
 ```
-Thực hiện Backup Database ra file `.sql`:
+Thực hiện Backup Database ra file `.sql` (dump cả database GitPTIT và database webapp):
 ```bash
-docker exec postgres bash -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > postgres/backups/database_backup_$(date +%Y-%m-%d).sql
+docker exec postgres bash -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > postgres/backups/gitptit_backup_$(date +%Y-%m-%d).sql
+docker exec postgres bash -c 'pg_dump -U "$POSTGRES_USER" "$WEBAPP_DB"' > postgres/backups/assistant_backup_$(date +%Y-%m-%d).sql
 ```
 Thực hiện Backup Source Code (các Repository) ra file nén `.tar.gz`:
 ```bash
-docker run --rm -v git-platform_gitea_data:/volume -v $(pwd)/gitptit/backups:/backup alpine tar -czf /backup/gitea_data_backup_$(date +%Y-%m-%d).tar.gz -C /volume .
+docker run --rm -v platform_gitptit_data:/volume -v $(pwd)/gitptit/backups:/backup alpine tar -czf /backup/gitptit_data_backup_$(date +%Y-%m-%d).tar.gz -C /volume .
 ```
 
 ### 2. Cách Phục hồi (Restore)
 Nếu server bị sập hoặc bạn muốn dời sang máy chủ mới, hãy làm đúng thứ tự sau:
 
 ```bash
-# 1. Dựng lại hệ thống rỗng (để Docker tạo 2 Volume trống)
+# 1. Dựng lại hệ thống rỗng (để Docker tạo các Volume trống)
 docker compose up -d
 
 # 2. Chờ 10 giây, sau đó bơm lại dữ liệu vào Database
-cat postgres/backups/database_backup_*.sql | docker exec -i postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+cat postgres/backups/gitptit_backup_*.sql | docker exec -i postgres bash -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+cat postgres/backups/assistant_backup_*.sql | docker exec -i postgres bash -c 'psql -U "$POSTGRES_USER" -d "$WEBAPP_DB"'
 
-# 3. Dừng Gitea tạm thời để tránh xung đột file
-docker stop gitea
+# 3. Dừng GitPTIT tạm thời để tránh xung đột file
+docker stop gitptit
 
 # 4. Giải nén Source code đè vào Volume
-docker run --rm -v git-platform_gitea_data:/volume -v $(pwd)/gitptit/backups:/backup alpine tar -xzf /backup/gitea_data_backup_*.tar.gz -C /volume
+docker run --rm -v platform_gitptit_data:/volume -v $(pwd)/gitptit/backups:/backup alpine tar -xzf /backup/gitptit_data_backup_*.tar.gz -C /volume
 
-# 5. Khởi động lại Gitea
-docker start gitea
+# 5. Khởi động lại GitPTIT
+docker start gitptit
 ```
 
 Toàn bộ hệ thống, mã nguồn, cấu hình SSO và tài khoản của bạn sẽ trở lại y hệt như cũ!

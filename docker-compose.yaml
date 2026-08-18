@@ -7,13 +7,13 @@ services:
     environment:
       - TZ=Asia/Ho_Chi_Minh
     depends_on:
-      - gitea
+      - gitptit
     networks:
       - platform_net
-  gitea:
+  gitptit:
     build: ./gitptit
     image: ghcr.io/ai-teaching-assistant-ptit/gitptit:latest
-    container_name: gitea
+    container_name: gitptit
     restart: unless-stopped
     depends_on:
       - postgres
@@ -34,7 +34,7 @@ services:
       - SSO_SECRET
       - SSO_DIRECTORY_ID
     volumes:
-      - gitea_data:/data
+      - gitptit_data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -69,8 +69,6 @@ services:
       - MINIO_ROOT_USER
       - MINIO_ROOT_PASSWORD
       - TZ=Asia/Ho_Chi_Minh
-    env_file:
-      - .env
     volumes:
       - minio_data:/data
     ports:
@@ -85,14 +83,14 @@ services:
       retries: 3
 
   docling:
+    container_name: docling
     image: quay.io/docling-project/docling-serve-cpu:v1.27.0
     restart: always
     environment:
       - DOCLING_SERVE_ENABLE_UI=1
       - DOCLING_DEVICE=cpu
       - DOCLING_SERVE_ENG_LOC_NUM_WORKERS=1
-    env_file:
-      - .env
+      - TZ=Asia/Ho_Chi_Minh
     volumes:
       - app-docling-cache:/opt/app-root/src/.cache
     healthcheck:
@@ -104,14 +102,39 @@ services:
     networks:
       - platform_net
 
+  db-init:
+    container_name: db-init
+    image: pgvector/pgvector:pg15
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_started
+    networks:
+      - platform_net
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      WEBAPP_DB: ${WEBAPP_DB}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        until pg_isready -h "$$POSTGRES_SERVER" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER"; do sleep 2; done;
+        if ! PGPASSWORD="$$POSTGRES_PASSWORD" psql -h "$$POSTGRES_SERVER" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -tAc "SELECT 1 FROM pg_database WHERE datname = '$$WEBAPP_DB'" | grep -q 1;
+        then PGPASSWORD="$$POSTGRES_PASSWORD" createdb -h "$$POSTGRES_SERVER" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -O "$$POSTGRES_USER" "$$WEBAPP_DB";
+        fi
+
   prestart:
+    container_name: prestart
     image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: "no"
     networks:
       - platform_net
     depends_on:
-      postgres:
-        condition: service_started
+      db-init:
+        condition: service_completed_successfully
     command: bash scripts/prestart.sh
     environment:
       - DOMAIN
@@ -131,15 +154,18 @@ services:
       - .env
 
   backend:
+    container_name: backend
     image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: always
     networks:
       - platform_net
     depends_on:
-      postgres:
-        condition: service_started
       prestart:
         condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      gitptit:
+        condition: service_started
     environment:
       - DOMAIN
       - FRONTEND_HOST
@@ -167,6 +193,7 @@ services:
       - "8000:8000"
 
   knowledge-worker:
+    container_name: knowledge-worker
     image: ghcr.io/ai-teaching-assistant-ptit/backend:latest
     restart: always
     command: python -m app.knowledge.worker
@@ -175,6 +202,8 @@ services:
     depends_on:
       postgres:
         condition: service_started
+      prestart:
+        condition: service_completed_successfully
       minio:
         condition: service_healthy
       docling:
@@ -195,15 +224,21 @@ services:
       - .env
 
   frontend:
+    container_name: frontend
     image: ghcr.io/ai-teaching-assistant-ptit/frontend:latest
     restart: always
+    depends_on:
+      backend:
+        condition: service_started
     networks:
       - platform_net
     ports:
       - "80:80"
+    volumes:
+      - ./frontend/nginx-extra.conf:/etc/nginx/extra-conf.d/backend.conf:ro
 
 volumes:
-  gitea_data:
+  gitptit_data:
   postgres_data:
   minio_data:
   app-docling-cache:
