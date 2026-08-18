@@ -24,13 +24,13 @@ jobs:
         id: filter
         with:
           filters: |
-            gitea:
-              - 'gitea/custom/**'
-              - 'gitea/Dockerfile'
+            gitptit:
+              - 'gitptit/custom/**'
+              - 'gitptit/Dockerfile'
       - name: Determine if should run
         id: check
         run: |
-          if [[ "${{ steps.filter.outputs.gitea }}" == "true" ]] || [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ steps.filter.outputs.gitptit }}" == "true" ]] || [[ "${{ github.ref }}" == refs/tags/* ]] || [[ "${{ github.event_name }}" == "release" ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "run=true" >> $GITHUB_OUTPUT
           else
             echo "run=false" >> $GITHUB_OUTPUT
@@ -75,7 +75,7 @@ jobs:
       - name: Build Docker image
         # Build image cục bộ để Trivy quét trước khi push
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:local -f gitea/Dockerfile ./gitea
+          docker build -t ${{ env.IMAGE_NAME }}:local -f gitptit/Dockerfile ./gitptit
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -124,14 +124,14 @@ jobs:
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/NguyenTuKien/nits-secrets.git nits-secrets
 
           # Cập nhật image tag trong file values.yaml của môi trường tương ứng (stag hoặc prod)
-          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' nits-secrets/gitea/${{ env.TARGET_ENV }}/values.yaml
+          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' nits-secrets/gitptit/${{ env.TARGET_ENV }}/values.yaml
 
           # Commit và push thay đổi lên repository nits-secrets
           cd nits-secrets
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -u
-          git commit -m "chore(gitea): update image tag to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
+          git commit -m "chore(gitptit): update image tag to ${{ env.IMAGE_TAG }} [skip ci]" || echo "No changes to commit"
           git push origin main
 
       - name: Generate Job Summary
