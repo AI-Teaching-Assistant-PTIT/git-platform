@@ -21,6 +21,7 @@
 
     required_variables=(
       POSTGRES_USER POSTGRES_PASSWORD
+      GITEA_ADMIN_USERNAME GITEA_ADMIN_PASSWORD GITEA_ADMIN_EMAIL
       MINIO_ROOT_USER MINIO_ROOT_PASSWORD MINIO_ACCESS_KEY MINIO_SECRET_KEY
       SECRET_KEY FIRST_SUPERUSER FIRST_SUPERUSER_PASSWORD
       CLOUDFLARE_TUNNEL_TOKEN
@@ -54,9 +55,17 @@
       --from-literal=username="$POSTGRES_USER" \
       --from-literal=password="$POSTGRES_PASSWORD"
 
+    # Container GitPTIT tự bootstrap từ các biến này: database, tài khoản admin
+    # và nguồn đăng nhập Microsoft. Bỏ trống cả ba biến SSO_* để tắt SSO.
     apply_secret gitea-{{ runtime_secrets_namespace }} \
       --from-literal=GITEA__database__USER="$POSTGRES_USER" \
-      --from-literal=GITEA__database__PASSWD="$POSTGRES_PASSWORD"
+      --from-literal=GITEA__database__PASSWD="$POSTGRES_PASSWORD" \
+      --from-literal=GITEA_ADMIN_USERNAME="$GITEA_ADMIN_USERNAME" \
+      --from-literal=GITEA_ADMIN_PASSWORD="$GITEA_ADMIN_PASSWORD" \
+      --from-literal=GITEA_ADMIN_EMAIL="$GITEA_ADMIN_EMAIL" \
+      --from-literal=SSO_CLIENT_ID="${SSO_CLIENT_ID:-}" \
+      --from-literal=SSO_SECRET="${SSO_SECRET:-}" \
+      --from-literal=SSO_DIRECTORY_ID="${SSO_DIRECTORY_ID:-}"
 
     apply_secret minio-secret \
       --from-literal=MINIO_ROOT_USER="$MINIO_ROOT_USER" \

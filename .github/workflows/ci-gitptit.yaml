@@ -26,6 +26,7 @@ jobs:
           filters: |
             gitptit:
               - 'gitptit/custom/**'
+              - 'gitptit/scripts/**'
               - 'gitptit/Dockerfile'
       - name: Determine if should run
         id: check
@@ -117,17 +118,17 @@ jobs:
 
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
 
-      - name: Update Helm chart values and commit to nits-secrets
+      - name: Update Helm chart values and commit to config-repo
         if: github.event_name != 'pull_request'
         run: |
-          # Clone repository nits-secrets
-          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/NguyenTuKien/nits-secrets.git nits-secrets
+          # Clone config-repo: đây là repo Argo CD lấy values (xem argocd/applicationset.yaml)
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/AI-Teaching-Assistant-PTIT/config-repo.git config-repo
 
-          # Cập nhật image tag trong file values.yaml của môi trường tương ứng (stag hoặc prod)
-          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' nits-secrets/gitptit/${{ env.TARGET_ENV }}/values.yaml
+          # Cập nhật image tag trong file values.yaml của môi trường tương ứng (demo hoặc prod)
+          sed -i -E 's/^(\s*tag:\s*).*$/\1"${{ env.IMAGE_TAG }}"/' config-repo/gitptit/${{ env.TARGET_ENV }}/values.yaml
 
-          # Commit và push thay đổi lên repository nits-secrets
-          cd nits-secrets
+          # Commit và push thay đổi lên repository config-repo
+          cd config-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -u

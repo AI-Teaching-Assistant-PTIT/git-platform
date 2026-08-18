@@ -80,26 +80,16 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# ConfigMap chỉ chứa những giá trị thay đổi theo môi trường. Mọi tuỳ chọn cố định của
+# sản phẩm (branding, SSH, LFS, Actions, oauth2_client, INSTALL_LOCK, TZ, USER_UID/GID...)
+# đã là ENV trong gitptit/Dockerfile nên không lặp lại ở đây; muốn đổi chính sách thì sửa
+# Dockerfile để mọi môi trường nhận cùng một hành vi.
+# Thông tin nhạy cảm (GITEA__database__USER, GITEA__database__PASSWD, GITEA_ADMIN_*, SSO_*)
+# nằm trong Secret cùng tên với release, do Ansible role runtime_secrets tạo từ platform/.env.
 config:
-  TZ: "Asia/Ho_Chi_Minh"
-  GITEA__APP_NAME: "Git Platform"
-  GITEA__server__LFS_START_SERVER: "true"
-  GITEA__database__DB_TYPE: "postgres"
   GITEA__database__HOST: "postgres-rw:5432"
   GITEA__database__NAME: "gitptit"
-  USER_UID: "1000"
-  USER_GID: "1000"
+  GITEA__database__SSL_MODE: "disable"
   GITEA__server__DOMAIN: "git.example.com"
   GITEA__server__ROOT_URL: "https://git.example.com/"
   GITEA__server__SSH_DOMAIN: "git.example.com"
-  GITEA__server__SSH_PORT: "2222"
-  GITEA__server__DISABLE_SSH: "false"
-  GITEA__service__DISABLE_REGISTRATION: "false"
-  GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
-  GITEA__server__LANDING_PAGE: "explore"
-  GITEA__actions__ENABLED: "true"
-  GITEA__oauth2_client__ACCOUNT_LINKING: "auto"
-  GITEA__oauth2_client__UPDATE_AVATAR: "true"
-  GITEA__oauth2_client__ENABLE_AUTO_REGISTRATION: "true"
-  GITEA__oauth2_client__USERNAME: "preferred_username"
-  GITEA__service__VALID_USERNAME_CHARS: 'a-zA-Z0-9_-.'

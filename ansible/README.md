@@ -38,8 +38,11 @@ Tạo/cập nhật `platform/.env` (file này đã được Git ignore). Ansible
 Các biến bắt buộc:
 
 ```dotenv
-POSTGRES_USER=
+POSTGRES_USER=            # phải là admin để khớp CNPG bootstrap và Gitea
 POSTGRES_PASSWORD=
+GITEA_ADMIN_USERNAME=
+GITEA_ADMIN_PASSWORD=
+GITEA_ADMIN_EMAIL=
 MINIO_ROOT_USER=
 MINIO_ROOT_PASSWORD=
 MINIO_ACCESS_KEY=
@@ -52,6 +55,29 @@ GHCR_USERNAME=
 GHCR_TOKEN=
 GHCR_EMAIL=
 ```
+
+Các biến tuỳ chọn (được đưa vào Secret dưới dạng rỗng nếu không khai báo):
+
+```dotenv
+SSO_CLIENT_ID=
+SSO_SECRET=
+SSO_DIRECTORY_ID=
+```
+
+## Gitea: tài khoản admin và Microsoft SSO
+
+Role `runtime_secrets` đưa `GITEA_ADMIN_*` và `SSO_*` vào Secret `gitea-<namespace>`.
+Container GitPTIT tự dùng các biến này khi khởi động để migrate database, tạo tài khoản
+admin và tạo/cập nhật nguồn đăng nhập Microsoft — không cần bước cấu hình thủ công qua web.
+
+- Bỏ trống cả ba biến `SSO_*` để tắt SSO; điền thiếu một biến sẽ làm container dừng với lỗi rõ ràng.
+- Rotate client secret: sửa `SSO_SECRET` trong `.env`, chạy lại playbook rồi
+  `kubectl rollout restart deployment/gitea-<namespace>`.
+- Đổi mật khẩu admin sau lần tạo đầu không bị bootstrap ghi đè; muốn đặt lại phải dùng
+  `gitea admin user change-password` trong pod.
+- Redirect URI đăng ký trên Entra ID: `https://<GITEA__server__DOMAIN>/user/oauth2/Microsoft/callback`.
+
+Chi tiết cơ chế bootstrap xem [../README.md](../README.md).
 
 ## Gitea integration token
 
