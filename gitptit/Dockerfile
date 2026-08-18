@@ -15,5 +15,4 @@ RUN chown -R 1000:1000 /app/gitea/custom
 # Tell Gitea to use this new custom folder
 ENV GITEA_CUSTOM=/app/gitea/custom
 
-# Gitea's s6-overlay requires running as root initially to set up services, 
 # it will automatically drop privileges to the git user.
